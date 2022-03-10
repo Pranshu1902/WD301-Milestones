@@ -2,8 +2,8 @@ import React from "react";
 
 export default function AppContainer(props: {children: React.ReactNode}) {
     return (
-        <div className="items-center h-screen bg-gray-100">
-            <div className="flex bg-gray-100 items-center mx-auto">
+        <div className="h-screen bg-gray-100 justify-center items-center flex">
+            <div className="flex bg-gray-100 justify-center">
                 {props.children}
             </div>
         </div>

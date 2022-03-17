@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import LabelledInput from "../LabelledInput";
 
-const formTemplate = { type: "text", label: "" };
+const formTemplate = { type: "text", label: "", value: "" };
 
 const formFields = [
-  { id: 1, type: "text", label: "First Name" },
-  { id: 2, type: "text", label: "Last Name" },
-  { id: 3, type: "email", label: "Email" },
-  { id: 4, type: "date", label: "Date of Birth" },
-  { id: 5, type: "tel", label: "Phone" },
+  { id: 1, type: "text", label: "First Name", value: "" },
+  { id: 2, type: "text", label: "Last Name", value: "" },
+  { id: 3, type: "email", label: "Email", value: "" },
+  { id: 4, type: "date", label: "Date of Birth", value: "" },
+  { id: 5, type: "tel", label: "Phone", value: "" },
 ];
 
 export default function Form(props: { closeFormCB: () => void }) {
@@ -22,6 +22,7 @@ export default function Form(props: { closeFormCB: () => void }) {
         ...formTemplate,
         id: Number(new Date()),
         label: newField,
+        value: "",
       },
     ]);
     setNewField("");
@@ -31,8 +32,32 @@ export default function Form(props: { closeFormCB: () => void }) {
     setState(state.filter((field) => field.id !== id));
   };
 
+  const updateField = (e: any, id: number) => {
+    let getVals = state[id];
+    let value = e.target.value;
+
+    state.forEach((field) => {
+      console.log(field.label, ": ", field.value);
+    });
+
+    setState((state) => {
+      return [
+        ...state.filter((field) => field.id !== id),
+        {
+          ...getVals,
+          value: value,
+        },
+      ].sort((a, b) => a.id - b.id);
+    });
+  };
+
   const clearForm = () => {
-    setState([]);
+    state.forEach((field) => console.log(field.label, ": ", field.value));
+    setState(
+      state.map((field) => {
+        return { ...field, value: "" };
+      })
+    );
   };
 
   return (
@@ -40,11 +65,17 @@ export default function Form(props: { closeFormCB: () => void }) {
       <div>
         {state.map((field) => (
           <LabelledInput
-            key={field.id}
             id={field.id}
             label={field.label}
+            key={field.id}
             fieldType={field.type}
             removeFieldCB={removeField}
+            // updating the value on change
+            value={field.value}
+            onChangeCB={(e) => {
+              updateField(e, field.id);
+              state[field.id].value = e.target.value;
+            }}
           />
         ))}
       </div>
@@ -59,7 +90,7 @@ export default function Form(props: { closeFormCB: () => void }) {
           }}
         />
         <button
-          className="px-12 m-4 py-1 font-bold text-white bg-blue-500 hover:bg-blue-800 rounded-lg"
+          className="px-12 m-4 py-1 shadow-lg font-bold text-white bg-blue-500 hover:bg-blue-800 rounded-lg"
           onClick={addField}
         >
           Add Field
@@ -74,13 +105,13 @@ export default function Form(props: { closeFormCB: () => void }) {
           Submit
         </button>
         <button
-          className="px-12 mt-4 py-2 font-bold text-white bg-blue-500 hover:bg-blue-800 rounded-lg"
+          className="px-12 mt-4 py-2 shadow-lg font-bold text-white bg-blue-500 hover:bg-blue-800 rounded-lg"
           onClick={props.closeFormCB}
         >
           Close Form
         </button>
         <button
-          className="px-12 mt-4 py-2 font-bold text-white bg-blue-500 hover:bg-blue-800 rounded-lg"
+          className="px-12 mt-4 py-2 shadow-lg font-bold text-white bg-blue-500 hover:bg-blue-800 rounded-lg"
           onClick={clearForm}
         >
           Clear Form

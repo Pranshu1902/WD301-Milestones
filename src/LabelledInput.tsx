@@ -4,7 +4,9 @@ export default function LabelledInput(props: {
   id: number;
   label: string;
   fieldType: string;
+  value: string;
   removeFieldCB: (id: number) => void;
+  onChangeCB: (e: any) => void;
 }) {
   return (
     <>

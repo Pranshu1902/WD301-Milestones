@@ -33,22 +33,12 @@ export default function Form(props: { closeFormCB: () => void }) {
   };
 
   const updateField = (e: any, id: number) => {
-    let getVals = state[id];
-    let value = e.target.value;
-
-    state.forEach((field) => {
-      console.log(field.label, ": ", field.value);
-    });
-
-    setState((state) => {
-      return [
-        ...state.filter((field) => field.id !== id),
-        {
-          ...getVals,
-          value: value,
-        },
-      ].sort((a, b) => a.id - b.id);
-    });
+    setState(
+      state.map((field) => {
+        if (field.id === id) return { ...field, value: e.target.value };
+        return field;
+      })
+    );
   };
 
   const clearForm = () => {
@@ -74,7 +64,7 @@ export default function Form(props: { closeFormCB: () => void }) {
             value={field.value}
             onChangeCB={(e) => {
               updateField(e, field.id);
-              state[field.id].value = e.target.value;
+              //state[field.id].value = e.target.value;
             }}
           />
         ))}
@@ -99,22 +89,22 @@ export default function Form(props: { closeFormCB: () => void }) {
 
       <div className="flex gap-4 w-full">
         <button
-          type="submit"
-          className="mt-4 shadow-xl px-12 py-2 text-white bg-blue-500 hover:bg-blue-800 rounded-lg font-bold"
+          className="px-12 mt-4 py-2 shadow-lg font-bold text-white bg-blue-500 hover:bg-blue-800 rounded-lg"
+          onClick={clearForm}
         >
-          Submit
+          Clear Form
         </button>
         <button
-          className="px-12 mt-4 py-2 shadow-lg font-bold text-white bg-blue-500 hover:bg-blue-800 rounded-lg"
+          className="px-12 mt-4 py-2 shadow-lg font-bold text-white bg-red-500 hover:bg-red-800 rounded-lg"
           onClick={props.closeFormCB}
         >
           Close Form
         </button>
         <button
-          className="px-12 mt-4 py-2 shadow-lg font-bold text-white bg-blue-500 hover:bg-blue-800 rounded-lg"
-          onClick={clearForm}
+          type="submit"
+          className="mt-4 shadow-xl px-12 py-2 text-white bg-green-500 hover:bg-green-800 rounded-lg font-bold"
         >
-          Clear Form
+          Submit
         </button>
       </div>
     </div>

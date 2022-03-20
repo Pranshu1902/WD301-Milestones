@@ -6,7 +6,6 @@ export default function LabelledInput(props: {
   fieldType: string;
   value: string;
   removeFieldCB: (id: number) => void;
-  onChangeCB: (e: any) => void;
 }) {
   return (
     <>
@@ -15,8 +14,6 @@ export default function LabelledInput(props: {
         <input
           className="border-2 border-gray-200 rounded-lg p-2 my-2 w-full flex-1"
           type={props.fieldType}
-          onChange={props.onChangeCB}
-          value={props.value}
         />
         <button
           onClick={(_) => props.removeFieldCB(props.id)}

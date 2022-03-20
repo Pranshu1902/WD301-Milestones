@@ -64,7 +64,6 @@ export default function Form(props: { closeFormCB: () => void }) {
             value={field.value}
             onChangeCB={(e) => {
               updateField(e, field.id);
-              //state[field.id].value = e.target.value;
             }}
           />
         ))}

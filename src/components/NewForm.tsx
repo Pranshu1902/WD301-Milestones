@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import LabelledInput from "../LabelledInput";
-
-const formTemplate = { type: "text", label: "", value: "" };
+import closeIcon from "../images/close.png";
 
 export interface formTemplate {
   id: number;
@@ -10,31 +9,29 @@ export interface formTemplate {
   value: string;
 }
 
-const formFields = [
-  { id: 1, type: "text", label: "First Name", value: "" },
-  { id: 2, type: "text", label: "Last Name", value: "" },
-  { id: 3, type: "email", label: "Email", value: "" },
-  { id: 4, type: "date", label: "Date of Birth", value: "" },
-  { id: 5, type: "tel", label: "Phone", value: "" },
+const formTemplate = { type: "text", label: "", value: "" };
+
+const formFields: formTemplate[] = [
+  { id: 1, type: "text", label: "City", value: "" },
 ];
 
-let formField = [{ id: 1, type: "text", label: "First Name", value: "" }];
-
 export default function Form(props: { closeFormCB: () => void }) {
-  const [state, setState] = useState(formField);
+  const [state, setState] = useState(formFields);
   const [newField, setNewField] = useState("");
 
   const addField = () => {
-    setState([
-      ...state,
-      {
-        ...formTemplate,
-        id: Number(new Date()),
-        label: newField,
-        value: "",
-      },
-    ]);
-    setNewField("");
+    if (newField != "") {
+      setState([
+        ...state,
+        {
+          ...formTemplate,
+          id: Number(new Date()),
+          label: newField,
+          value: "",
+        },
+      ]);
+      setNewField("");
+    }
   };
 
   const removeField = (id: number) => {
@@ -51,7 +48,6 @@ export default function Form(props: { closeFormCB: () => void }) {
   };
 
   const clearForm = () => {
-    state.forEach((field) => console.log(field.label, ": ", field.value));
     setState(
       state.map((field) => {
         return { ...field, value: "" };
@@ -62,6 +58,20 @@ export default function Form(props: { closeFormCB: () => void }) {
   return (
     <div className="w-full divide-y-2 divide-dotted flex flex-col gap-2">
       <div>
+        <button
+          className="float-right px-3 py-1 mt-4 font-bold text-white rounded-xl"
+          onClick={props.closeFormCB}
+        >
+          <img
+            className="hover:scale-125"
+            src={closeIcon}
+            alt="close"
+            width={20}
+            height={20}
+          />
+        </button>
+      </div>
+      <div>
         {state.map((field) => (
           <LabelledInput
             id={field.id}
@@ -69,7 +79,6 @@ export default function Form(props: { closeFormCB: () => void }) {
             key={field.id}
             fieldType={field.type}
             removeFieldCB={removeField}
-            // updating the value on change
             value={field.value}
             onChangeCB={(e) => {
               updateField(e, field.id);
@@ -102,17 +111,12 @@ export default function Form(props: { closeFormCB: () => void }) {
         >
           Clear Form
         </button>
-        <button
-          className="px-12 mt-4 py-2 shadow-lg font-bold text-white bg-red-500 hover:bg-red-800 rounded-lg"
-          onClick={props.closeFormCB}
-        >
-          Close Form
-        </button>
+
         <button
           type="submit"
           className="mt-4 shadow-xl px-12 py-2 text-white bg-green-500 hover:bg-green-800 rounded-lg font-bold"
         >
-          Submit
+          Submit (Save)
         </button>
       </div>
     </div>

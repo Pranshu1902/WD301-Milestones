@@ -16,7 +16,7 @@ export default function Home(props: { openFormCB: () => void }) {
   return (
     <div className="flex flex-col justify-center">
       <div>
-        <div className="float-left">
+        <div className="float-left pt-1">
           {formField.map((field) => field.label)}
         </div>
         <button className="ml-2 bg-red-500 text-white font-bold rounded-lg px-4 py-2 hover:bg-red-700 float-right">

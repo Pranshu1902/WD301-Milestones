@@ -4,15 +4,18 @@ import Header from "./Header";
 import Home from "./components/Home";
 import Form from "./components/Form";
 import NewForm from "./components/NewForm";
+import CreateNewForm from "./components/CreateNewForm";
 
 function App() {
   const [state, setState] = useState("HOME");
+  const [formId, setFormId] = useState(0);
 
   const closeForm = () => {
     setState("HOME");
   };
 
-  const openForm = () => {
+  const openForm = (id: number) => {
+    setFormId(id);
     setState("FORM");
   };
 
@@ -33,10 +36,6 @@ function App() {
     value: string;
   }
 
-  const formFields: formTemplate[] = [
-    { id: 1, type: "text", label: "First Name", value: "" },
-  ];
-
   return (
     <AppContainer>
       <div className="p-4 w-full justify-center bg-white shadow-lg rounded-xl items-center font-bold">
@@ -44,7 +43,7 @@ function App() {
         {state === "HOME" ? (
           <Home openFormCB={openForm} />
         ) : (
-          <NewForm closeFormCB={closeForm} />
+          <NewForm id={formId} closeFormCB={closeForm} />
         )}
       </div>
     </AppContainer>

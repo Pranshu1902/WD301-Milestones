@@ -20,44 +20,31 @@ const formTemplate = { type: "text", label: "", value: "" };
 
 const sampleForm: form = {
   id: 1,
-  title: "Form 1",
-  fields: [{ id: 1, type: "text", label: "Name", value: "" }],
+  title: "Title",
+  fields: [{ id: 1, type: "text", label: "New Form", value: "" }],
 };
 
-// sample form with default values for a new form
-const newForm: form = {
+const sampleForm2: form = {
   id: 2,
-  title: "Title",
-  fields: [{ id: 1, type: "text", label: "Name", value: "" }],
+  title: "Title 2",
+  fields: [{ id: 1, type: "text", label: "County", value: "" }],
 };
+
+let allForms: form[] = [sampleForm, sampleForm2];
 
 const formFields: formTemplate[] = [
   { id: 1, type: "text", label: "City", value: "" },
 ];
 
-const sampleForm1: form = {
-  id: 1,
-  title: "Form 1",
-  fields: [{ id: 1, type: "text", label: "Name", value: "" }],
-};
-
-const sampleForm2: form = {
-  id: 2,
-  title: "Form 2",
-  fields: [{ id: 2, type: "text", label: "Country", value: "" }],
-};
-
-let allForms: form[] = [sampleForm1, sampleForm2];
-
-export default function Form(props: { closeFormCB: () => void; id: number }) {
+export default function Form(props: { closeFormCB: () => void }) {
   //const [state, setState] = useState(sampleForm.fields);
   const [state, setState] = useState(
-    allForms.filter((form) => form.id === props.id)[0]
+    allForms.filter((form) => form.id === 1)[0]
   );
   const [newField, setNewField] = useState("");
 
   const addField = () => {
-    /*if (newField != "") {
+    if (newField != "") {
       setState({
         ...state,
         fields: [
@@ -71,16 +58,15 @@ export default function Form(props: { closeFormCB: () => void; id: number }) {
         ],
       });
       setNewField("");
-    }*/
+    }
   };
 
   const removeField = (id: number) => {
-    /*setState({
+    setState({
       ...state,
       fields: state.fields.filter((field) => field.id !== id),
     });
     //setState(state.filter((field) => field.id !== id));
-    */
   };
 
   const updateField = (e: any, id: number) => {
@@ -109,10 +95,10 @@ export default function Form(props: { closeFormCB: () => void; id: number }) {
   };
 
   const updateTitle = (value: string) => {
-    /*setState((state) => ({
+    setState((state) => ({
       ...state,
       title: value,
-    }));*/
+    }));
   };
 
   return (

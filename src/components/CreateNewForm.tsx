@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import LabelledInput from "../LabelledInput";
 import closeIcon from "../images/close.png";
 import FormTitle from "../FormTitle";
+import { getLocalForms, saveLocalForms } from "../Data";
 
 export interface formTemplate {
   id: number;
@@ -30,16 +31,19 @@ const sampleForm2: form = {
   fields: [{ id: 1, type: "text", label: "County", value: "" }],
 };
 
-let allForms: form[] = [sampleForm, sampleForm2];
+//let allForms: form[] = getLocalForms();
 
 const formFields: formTemplate[] = [
   { id: 1, type: "text", label: "City", value: "" },
 ];
 
 export default function Form(props: { closeFormCB: () => void }) {
+  //let allForms: form[] = [sampleForm];
+  //saveLocalForms(allForms);
+
   //const [state, setState] = useState(sampleForm.fields);
   const [state, setState] = useState(
-    allForms.filter((form) => form.id === 1)[0]
+    getLocalForms().filter((form) => form.id === 1)[0]
   );
   const [newField, setNewField] = useState("");
 

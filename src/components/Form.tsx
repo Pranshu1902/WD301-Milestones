@@ -10,14 +10,6 @@ export interface formTemplate {
   value: string;
 }
 
-const formFields = [
-  { id: 1, type: "text", label: "First Name", value: "" },
-  { id: 2, type: "text", label: "Last Name", value: "" },
-  { id: 3, type: "email", label: "Email", value: "" },
-  { id: 4, type: "date", label: "Date of Birth", value: "" },
-  { id: 5, type: "tel", label: "Phone", value: "" },
-];
-
 let formField = [{ id: 1, type: "text", label: "First Name", value: "" }];
 
 export default function Form(props: { closeFormCB: () => void }) {

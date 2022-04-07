@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import open from "../images/open.png";
 import deleteIcon from "../images/delete.png";
+import { getLocalForms, saveLocalForms } from "../Data";
 
 export interface formTemplate {
   id: number;
@@ -18,7 +19,7 @@ export interface form {
 const formTemplate = { type: "text", label: "", value: "" };
 
 const sampleForm: form = {
-  id: 1,
+  id: Number(new Date()),
   title: "Form 1",
   fields: [{ id: 1, type: "text", label: "Name", value: "" }],
 };
@@ -29,10 +30,25 @@ const sampleForm2: form = {
   fields: [{ id: 2, type: "text", label: "Country", value: "" }],
 };
 
-let allForms: form[] = [sampleForm, sampleForm2];
-
 export default function Home(props: { openFormCB: (id: number) => void }) {
+  let allForms: form[] = [sampleForm];
+  saveLocalForms(allForms);
+
   const [state, setState] = useState(allForms);
+
+  const generateNewForm = () => {
+    const newform: form = {
+      id: Number(new Date()),
+      title: "New Form",
+      fields: [
+        { id: Number(new Date()), type: "text", label: "Name", value: "" },
+      ],
+    };
+
+    saveLocalForms([...state, newform]);
+
+    setState([...state, newform]);
+  };
 
   return (
     <div className="flex flex-col justify-center gap-y-4">
@@ -67,7 +83,7 @@ export default function Home(props: { openFormCB: (id: number) => void }) {
       &nbsp;
       <button
         className="px-16 py-2 font-bold text-white bg-blue-500 hover:bg-blue-800 rounded-lg"
-        onClick={() => props.openFormCB(2)}
+        onClick={generateNewForm}
       >
         New Form
       </button>

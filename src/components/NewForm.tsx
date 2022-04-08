@@ -20,31 +20,26 @@ export interface form {
 const formTemplate = { type: "text", label: "", value: "" };
 
 const sampleForm: form = {
-  id: 1,
+  id: Number(new Date()),
   title: "Form 1",
-  fields: [{ id: 1, type: "text", label: "Name", value: "" }],
+  fields: [{ id: Number(new Date()), type: "text", label: "Name", value: "" }],
 };
 
 // sample form with default values for a new form
 const newForm: form = {
-  id: 2,
+  id: Number(new Date()),
   title: "Title",
-  fields: [{ id: 1, type: "text", label: "Name", value: "" }],
+  fields: [{ id: Number(new Date()), type: "text", label: "Name", value: "" }],
 };
 
-const formFields: formTemplate[] = [
-  { id: 1, type: "text", label: "City", value: "" },
-];
-
 const sampleForm1: form = {
-  id: 1,
+  id: Number(new Date()),
   title: "Form 1",
-  fields: [{ id: 1, type: "text", label: "Name", value: "" }],
+  fields: [{ id: Number(new Date()), type: "text", label: "Name", value: "" }],
 };
 
 export default function Form(props: { closeFormCB: () => void; id: number }) {
   saveLocalForms([sampleForm1]);
-  let all = getLocalForms();
   const [state, setState] = useState(
     getLocalForms().filter((form) => form.id === props.id)[0]
   );
@@ -103,11 +98,13 @@ export default function Form(props: { closeFormCB: () => void; id: number }) {
   };
 
   const updateTitle = (value: string) => {
-    /*setState((state) => ({
+    setState((state) => ({
       ...state,
       title: value,
-    }));*/
+    }));
   };
+
+  console.log("id: ", state.id);
 
   return (
     <div className="w-full divide-y-2 divide-dotted flex flex-col gap-2">
@@ -118,9 +115,9 @@ export default function Form(props: { closeFormCB: () => void; id: number }) {
             label="Form Title"
             key={state.id}
             fieldType="text"
-            value="SPM"
+            value={state.title}
             onChangeCB={(e) => {
-              updateField(e, state.id);
+              updateTitle(e);
             }}
           />
         </div>

@@ -25,8 +25,8 @@ const sampleForm: form = {
 };
 
 export default function Home(props: { openFormCB: (id: number) => void }) {
-  let allForms: form[] = [sampleForm];
-  saveLocalForms(allForms);
+  let Forms: form[] = [sampleForm];
+  saveLocalForms(Forms);
 
   const [state, setState] = useState(getLocalForms());
 
@@ -42,7 +42,7 @@ export default function Home(props: { openFormCB: (id: number) => void }) {
       id: Number(new Date()),
       title: "New Form",
       fields: [
-        { id: Number(new Date()), type: "text", label: "Name", value: "" },
+        //{ id: Number(new Date()), type: "text", label: "Name", value: "" },
       ],
     };
 
@@ -64,7 +64,7 @@ export default function Home(props: { openFormCB: (id: number) => void }) {
             <img
               className="float-right pt-0.5"
               src={deleteIcon}
-              alt=""
+              alt="delete"
               width={20}
               height={20}
             />
@@ -77,7 +77,7 @@ export default function Home(props: { openFormCB: (id: number) => void }) {
             <img
               className="float-right pt-0.5"
               src={open}
-              alt=""
+              alt="open"
               width={20}
               height={20}
             />

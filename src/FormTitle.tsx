@@ -1,6 +1,7 @@
 import React from "react";
 
 export default function FormTitle(props: {
+  id: number;
   label: string;
   fieldType: string;
   value: string;

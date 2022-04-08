@@ -38,10 +38,9 @@ const formFields: formTemplate[] = [
 ];
 
 export default function Form(props: { closeFormCB: () => void }) {
-  //let allForms: form[] = [sampleForm];
-  //saveLocalForms(allForms);
+  let allForms: form[] = [sampleForm];
+  saveLocalForms(allForms);
 
-  //const [state, setState] = useState(sampleForm.fields);
   const [state, setState] = useState(
     getLocalForms().filter((form) => form.id === 1)[0]
   );
@@ -110,6 +109,7 @@ export default function Form(props: { closeFormCB: () => void }) {
       <div className="flex justify-center">
         <div>
           <FormTitle
+            id={state.id}
             label="Form Title"
             key={state.id}
             fieldType="text"

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import LabelledInput from "../LabelledInput";
+import { getLocalForms, saveLocalForms } from "../Data";
 
 const formTemplate = { type: "text", label: "", value: "" };
 
@@ -10,9 +11,24 @@ export interface formTemplate {
   value: string;
 }
 
+interface form {
+  id: number;
+  title: string;
+  fields: formTemplate[];
+}
+
+const sampleForm: form[] = [
+  {
+    id: 1,
+    title: "Form 1",
+    fields: [{ id: 1, type: "text", label: "Name", value: "" }],
+  },
+];
+
 let formField = [{ id: 1, type: "text", label: "First Name", value: "" }];
 
 export default function Form(props: { closeFormCB: () => void }) {
+  saveLocalForms(sampleForm);
   const [state, setState] = useState(formField);
   const [newField, setNewField] = useState("");
 

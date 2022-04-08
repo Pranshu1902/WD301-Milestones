@@ -46,7 +46,7 @@ export default function Form(props: { closeFormCB: () => void; id: number }) {
   saveLocalForms([sampleForm1]);
   let all = getLocalForms();
   const [state, setState] = useState(
-    all.filter((form) => form.id === props.id)[0]
+    getLocalForms().filter((form) => form.id === props.id)[0]
   );
   const [newField, setNewField] = useState("");
 
@@ -114,8 +114,9 @@ export default function Form(props: { closeFormCB: () => void; id: number }) {
       <div className="flex justify-center">
         <div>
           <FormTitle
+            id={state.id}
             label="Form Title"
-            //key={state.id}
+            key={state.id}
             fieldType="text"
             value="SPM"
             onChangeCB={(e) => {

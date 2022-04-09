@@ -3,6 +3,7 @@ import LabelledInput from "../LabelledInput";
 import closeIcon from "../images/close.png";
 import FormTitle from "../FormTitle";
 import { getLocalForms, saveLocalForms } from "../Data";
+import { Link, navigate } from "raviger";
 
 export interface formTemplate {
   id: number;
@@ -19,11 +20,16 @@ export interface form {
 
 const formTemplate = { type: "text", label: "", value: "" };
 
-export default function Form(props: { closeFormCB: () => void; id: number }) {
+export default function Form(props: { id: number }) {
   const [state, setState] = useState(
     getLocalForms().filter((form) => form.id === props.id)[0]
   );
   const [newField, setNewField] = useState("");
+
+  useEffect(() => {
+    console.log("State id: ", state.id, " props id: ", props.id);
+    state.id !== props.id && navigate(`/forms/${state.id}`);
+  }, [state.id, props.id]);
 
   const updateForms = (newForm: form) => {
     let newForms = getLocalForms();
@@ -137,9 +143,9 @@ export default function Form(props: { closeFormCB: () => void; id: number }) {
           />
         </div>
         <div>
-          <button
+          <Link
             className="float-right px-3 py-1 mt-4 font-bold text-white rounded-xl"
-            onClick={props.closeFormCB}
+            href="/"
           >
             <img
               className="hover:scale-125"
@@ -148,7 +154,7 @@ export default function Form(props: { closeFormCB: () => void; id: number }) {
               width={20}
               height={20}
             />
-          </button>
+          </Link>
         </div>
       </div>
 

@@ -19,103 +19,92 @@ export interface form {
 
 const formTemplate = { type: "text", label: "", value: "" };
 
-// sample form with default values for a new form
-const newForm: form = {
-  id: Number(new Date()),
-  title: "Title",
-  fields: [{ id: Number(new Date()), type: "text", label: "Name", value: "" }],
-};
-
 export default function Form(props: { closeFormCB: () => void; id: number }) {
   const [state, setState] = useState(
     getLocalForms().filter((form) => form.id === props.id)[0]
   );
   const [newField, setNewField] = useState("");
 
-  // auto-saving
-  /*useEffect(() => {
-    let timeout = setTimeout(() => {
-      saveLocalForms([state]);
-    }, 200);
+  const updateForms = (newForm: form) => {
+    let newForms = getLocalForms();
 
-    return () => {
-      clearTimeout(timeout);
-    };
-  }, [state]);*/
+    newForms.map((form) => {
+      form.id === props.id ? (form.fields = newForm.fields) : (form = form);
+    });
+
+    saveLocalForms(newForms);
+  };
 
   const addField = () => {
     if (newField != "") {
+      let newFields = [
+        ...state.fields,
+        { ...formTemplate, id: Number(new Date()), label: newField, value: "" },
+      ];
+
+      let finalform = { ...state, fields: newFields };
+
       let newState = {
         ...state,
-        fields: [
-          ...state.fields,
-          {
-            ...formTemplate,
-            id: Number(new Date()),
-            label: newField,
-            value: "",
-          },
-        ],
+        fields: newFields,
       };
       setState(newState);
       setNewField("");
 
-      let allFormss = getLocalForms();
-
-      allFormss.map((form) => {
-        form.id === props.id ? (form = newState) : (form = form);
-      });
-
-      allFormss.map((form) => {
-        console.log(form.fields);
-      });
-
-      saveLocalForms(allFormss);
+      updateForms(finalform);
     }
   };
 
   const removeField = (id: number) => {
+    let newFields = state.fields.filter((field) => field.id !== id);
+
     let newState = {
       ...state,
-      fields: state.fields.filter((field) => field.id !== id),
+      fields: newFields,
     };
     setState(newState);
 
-    let allFormss = getLocalForms();
-
-    allFormss.map((form) => {
-      form.id === props.id ? (form = newState) : (form = form);
-    });
-
-    saveLocalForms(allFormss);
+    updateForms(newState);
   };
 
   const updateField = (e: any, id: number) => {
-    setState({
-      ...state,
-      fields: state.fields.map((field) => {
-        if (field.id === id) {
-          return {
-            ...field,
-            value: e.target.value,
-          };
-        } else {
-          return field;
-        }
-      }),
+    let newFields = state.fields.map((field) => {
+      if (field.id === id) {
+        return {
+          ...field,
+          value: e.target.value,
+        };
+      } else {
+        return field;
+      }
     });
+
+    let newState = {
+      ...state,
+      fields: newFields,
+    };
+
+    setState(newState);
+
+    updateForms(newState);
   };
 
   const clearForm = () => {
-    setState({
-      ...state,
-      fields: state.fields.map((field) => {
-        return {
-          ...field,
-          value: "",
-        };
-      }),
+    let updatedFields = state.fields.map((field) => {
+      return {
+        ...field,
+        value: "",
+      };
     });
+
+    let newState = {
+      ...state,
+      fields: updatedFields,
+    };
+
+    setState(newState);
+
+    updateForms(newState);
   };
 
   const updateTitle = (value: string) => {

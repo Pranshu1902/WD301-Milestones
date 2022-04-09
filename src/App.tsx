@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import AppContainer from "./AppContainer";
 import Header from "./Header";
 import Home from "./components/Home";
-import Form from "./components/Form";
+//import Form from "./components/Form";
 import NewForm from "./components/NewForm";
 
 function App() {
@@ -17,16 +17,6 @@ function App() {
     setFormId(id);
     setState("FORM");
   };
-
-  /*const formFields = [
-    { id: 1, type: "text", label: "First Name", value: "" },
-    { id: 2, type: "text", label: "Last Name", value: "" },
-    { id: 3, type: "email", label: "Email", value: "" },
-    { id: 4, type: "date", label: "Date of Birth", value: "" },
-    { id: 5, type: "tel", label: "Phone", value: "" },
-  ];*/
-
-  //const Forms = [{ title: "Sample Form", fields: formFields }];
 
   interface formTemplate {
     id: number;

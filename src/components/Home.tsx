@@ -16,7 +16,7 @@ export interface form {
   fields: formTemplate[];
 }
 
-const formTemplate = { type: "text", label: "", value: "" };
+// const formTemplate = { type: "text", label: "", value: "" };
 
 const sampleForm: form = {
   id: Number(new Date()),
@@ -25,15 +25,10 @@ const sampleForm: form = {
 };
 
 export default function Home(props: { openFormCB: (id: number) => void }) {
-  let Forms: form[] = [sampleForm];
-  saveLocalForms(Forms);
-
-  const [state, setState] = useState(getLocalForms());
+  const [state, setState] = useState(() => getLocalForms());
 
   const deleteForm = (id: number) => {
-    let allForms = getLocalForms();
-    allForms = allForms.filter((form) => form.id !== id);
-    saveLocalForms(allForms);
+    saveLocalForms(getLocalForms().filter((form) => form.id !== id));
     setState(getLocalForms());
   };
 
@@ -41,21 +36,20 @@ export default function Home(props: { openFormCB: (id: number) => void }) {
     const newform: form = {
       id: Number(new Date()),
       title: "New Form",
-      fields: [
-        //{ id: Number(new Date()), type: "text", label: "Name", value: "" },
-      ],
+      fields: [],
     };
 
-    saveLocalForms([...state, newform]);
+    console.log("New form generated with id: ", newform.id);
 
+    saveLocalForms([...state, newform]);
     setState([...state, newform]);
   };
 
   return (
     <div className="flex flex-col justify-center gap-y-4">
       {state.map((form) => (
-        <div>
-          <div className="float-left pt-1">{form.title}</div>
+        <div key={form.id}>
+          <div className="float-left pt-1 pr-4">{form.title}</div>
           <button
             className="ml-2 bg-red-500 text-white font-bold rounded-lg px-4 py-2 hover:bg-red-700 float-right"
             onClick={() => deleteForm(form.id)}

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import LabelledInput from "../LabelledInput";
 import closeIcon from "../images/close.png";
 import FormTitle from "../FormTitle";
@@ -19,12 +19,6 @@ export interface form {
 
 const formTemplate = { type: "text", label: "", value: "" };
 
-const sampleForm: form = {
-  id: Number(new Date()),
-  title: "Form 1",
-  fields: [{ id: Number(new Date()), type: "text", label: "Name", value: "" }],
-};
-
 // sample form with default values for a new form
 const newForm: form = {
   id: Number(new Date()),
@@ -32,22 +26,26 @@ const newForm: form = {
   fields: [{ id: Number(new Date()), type: "text", label: "Name", value: "" }],
 };
 
-const sampleForm1: form = {
-  id: Number(new Date()),
-  title: "Form 1",
-  fields: [{ id: Number(new Date()), type: "text", label: "Name", value: "" }],
-};
-
 export default function Form(props: { closeFormCB: () => void; id: number }) {
-  saveLocalForms([sampleForm1]);
   const [state, setState] = useState(
     getLocalForms().filter((form) => form.id === props.id)[0]
   );
   const [newField, setNewField] = useState("");
 
+  // auto-saving
+  /*useEffect(() => {
+    let timeout = setTimeout(() => {
+      saveLocalForms([state]);
+    }, 200);
+
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [state]);*/
+
   const addField = () => {
-    /*if (newField != "") {
-      setState({
+    if (newField != "") {
+      let newState = {
         ...state,
         fields: [
           ...state.fields,
@@ -58,66 +56,94 @@ export default function Form(props: { closeFormCB: () => void; id: number }) {
             value: "",
           },
         ],
-      });
+      };
+      setState(newState);
       setNewField("");
-    }*/
+
+      let allFormss = getLocalForms();
+
+      allFormss.map((form) => {
+        form.id === props.id ? (form = newState) : (form = form);
+      });
+
+      allFormss.map((form) => {
+        console.log(form.fields);
+      });
+
+      saveLocalForms(allFormss);
+    }
   };
 
   const removeField = (id: number) => {
-    /*setState({
+    let newState = {
       ...state,
       fields: state.fields.filter((field) => field.id !== id),
+    };
+    setState(newState);
+
+    let allFormss = getLocalForms();
+
+    allFormss.map((form) => {
+      form.id === props.id ? (form = newState) : (form = form);
     });
-    //setState(state.filter((field) => field.id !== id));
-    */
+
+    saveLocalForms(allFormss);
   };
 
   const updateField = (e: any, id: number) => {
-    /*setState(
-      state.map((field) => {
-        if (field.id === id) return { ...field, value: e.target.value };
-        return field;
-      })
-    );*/
+    setState({
+      ...state,
+      fields: state.fields.map((field) => {
+        if (field.id === id) {
+          return {
+            ...field,
+            value: e.target.value,
+          };
+        } else {
+          return field;
+        }
+      }),
+    });
   };
 
   const clearForm = () => {
-    /*setState(
-      state.map((field) => {
+    setState({
+      ...state,
+      fields: state.fields.map((field) => {
         return {
           ...field,
-          fields: [
-            ...state.fields,
-            {
-              value: "",
-            },
-          ],
+          value: "",
         };
-      })
-    );*/
+      }),
+    });
   };
 
   const updateTitle = (value: string) => {
-    setState((state) => ({
-      ...state,
+    let allForms = getLocalForms();
+
+    setState((form) => ({
+      ...form,
       title: value,
     }));
-  };
 
-  console.log("id: ", state.id);
+    allForms.map((form) => {
+      form.id === props.id ? (form.title = value) : (form.title = form.title);
+    });
+
+    saveLocalForms(allForms);
+  };
 
   return (
     <div className="w-full divide-y-2 divide-dotted flex flex-col gap-2">
       <div className="flex justify-center">
         <div>
           <FormTitle
-            id={state.id}
+            id={state?.id}
             label="Form Title"
-            key={state.id}
             fieldType="text"
-            value={state.title}
+            value={state?.title}
             onChangeCB={(e) => {
-              updateTitle(e);
+              updateTitle(e.target.value);
             }}
           />
         </div>
@@ -138,7 +164,7 @@ export default function Form(props: { closeFormCB: () => void; id: number }) {
       </div>
 
       <div>
-        {state.fields.map((field) => (
+        {state?.fields.map((field) => (
           <LabelledInput
             id={field.id}
             label={field.label}
@@ -182,7 +208,7 @@ export default function Form(props: { closeFormCB: () => void; id: number }) {
           type="submit"
           className="mt-4 shadow-xl px-12 py-2 text-white bg-green-500 hover:bg-green-800 rounded-lg font-bold"
         >
-          Submit (Save)
+          Submit
         </button>
       </div>
     </div>

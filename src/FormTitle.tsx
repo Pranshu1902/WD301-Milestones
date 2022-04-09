@@ -1,10 +1,10 @@
 import React from "react";
 
 export default function FormTitle(props: {
-  id: number;
+  id?: number;
   label: string;
   fieldType: string;
-  value: string;
+  value?: string;
   onChangeCB: (e: any) => void;
 }) {
   return (

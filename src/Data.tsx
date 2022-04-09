@@ -6,6 +6,6 @@ export const saveLocalForms = (localForms: form[]) => {
 };
 
 export const getLocalForms: () => form[] = () => {
-  const savedFormsJSON = localStorage.getItem("formData");
+  const savedFormsJSON = localStorage.getItem("savedForms");
   return savedFormsJSON ? JSON.parse(savedFormsJSON) : [];
 };

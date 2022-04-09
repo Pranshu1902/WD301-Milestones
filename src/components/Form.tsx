@@ -19,16 +19,20 @@ interface form {
 
 const sampleForm: form[] = [
   {
-    id: 1,
+    id: Number(new Date()),
     title: "Form 1",
-    fields: [{ id: 1, type: "text", label: "Name", value: "" }],
+    fields: [
+      { id: Number(new Date()), type: "text", label: "Name", value: "" },
+    ],
   },
 ];
 
-let formField = [{ id: 1, type: "text", label: "First Name", value: "" }];
+let formField = [
+  { id: Number(new Date()), type: "text", label: "First Name", value: "" },
+];
 
 export default function Form(props: { closeFormCB: () => void }) {
-  saveLocalForms(sampleForm);
+  //saveLocalForms(sampleForm);
   const [state, setState] = useState(formField);
   const [newField, setNewField] = useState("");
 
@@ -59,7 +63,6 @@ export default function Form(props: { closeFormCB: () => void }) {
   };
 
   const clearForm = () => {
-    state.forEach((field) => console.log(field.label, ": ", field.value));
     setState(
       state.map((field) => {
         return { ...field, value: "" };

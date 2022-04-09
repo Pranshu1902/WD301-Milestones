@@ -22,7 +22,9 @@ const formTemplate = { type: "text", label: "", value: "" };
 
 export default function Form(props: { id: number }) {
   const [state, setState] = useState(
-    getLocalForms().filter((form) => form.id === props.id)[0]
+    getLocalForms().filter((form) => form.id === props.id).length !== 0
+      ? getLocalForms().filter((form) => form.id === props.id)[0]
+      : { id: props.id, title: "Untitled Form", fields: [] }
   );
   const [newField, setNewField] = useState("");
 

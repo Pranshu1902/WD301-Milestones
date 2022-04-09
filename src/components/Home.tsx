@@ -100,8 +100,8 @@ export default function Home() {
       ) : null}{" "}
       &nbsp;
       <Link
-        className="px-16 py-2 font-bold text-white bg-blue-500 hover:bg-blue-800 rounded-lg"
-        href={"/forms/0"}
+        className="justify-center flex py-2 font-bold text-white bg-blue-500 hover:bg-blue-800 rounded-lg"
+        href={`/forms/0`}
       >
         New Form
       </Link>

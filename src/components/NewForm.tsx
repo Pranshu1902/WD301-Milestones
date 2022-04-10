@@ -167,7 +167,10 @@ export default function Form(props: { id: number }) {
     <div className="w-full divide-y-2 divide-dotted flex flex-col gap-2">
       <div className="flex gap-4">
         <div className="pt-2">
-          <button className="font-bold text-white float-left shadow-xl flex rounded-lg p-2 bg-green-400 hover:bg-green-700">
+          <Link
+            href={`/preview/${state.id}`}
+            className="font-bold text-white float-left shadow-xl flex rounded-lg p-2 bg-green-400 hover:bg-green-700"
+          >
             Preview &nbsp;
             <img
               className="flex items-center pt-1"
@@ -176,7 +179,7 @@ export default function Form(props: { id: number }) {
               src={previewIcon}
               alt="preview"
             />
-          </button>
+          </Link>
         </div>
         <div className="flex justify-center">
           <div>

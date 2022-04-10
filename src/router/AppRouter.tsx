@@ -5,11 +5,13 @@ import About from "../components/About";
 import Home from "../components/Home";
 import Form from "../components/NewForm";
 import Header from "../Header";
+import Preview from "../components/Preview";
 
 const routes = {
   "/": () => <Home />,
   "/about": () => <About />,
   "/forms/:id": ({ id }: { id: string }) => <Form id={Number(id)} />,
+  "/preview/:id": ({ id }: { id: string }) => <Preview id={Number(id)} />,
 };
 
 export default function AppRouter() {

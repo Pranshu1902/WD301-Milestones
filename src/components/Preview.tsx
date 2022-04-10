@@ -78,11 +78,28 @@ export default function Preview(props: { id: number }) {
             alt=""
           />
         </Link>
-        Preview Page
       </div>
-      <div className="flex gap-6">
-        <img width={30} height={20} src={leftArrow} alt="" />
-        <img width={30} height={20} src={rightArrow} alt="" />
+      <p className="text-3xl flex">{state.title}</p>
+      <div>
+        {state.fields.map((field) =>
+          field.id === props.id ? field.label : ""
+        )}
+      </div>
+      <div className="flex gap-6 justify-center">
+        <img
+          className="hover:scale-125"
+          width={30}
+          height={20}
+          src={leftArrow}
+          alt="left"
+        />
+        <img
+          className="hover:scale-125"
+          width={30}
+          height={20}
+          src={rightArrow}
+          alt="right"
+        />
       </div>
     </div>
   );

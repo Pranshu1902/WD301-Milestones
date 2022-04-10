@@ -1,5 +1,14 @@
 import React from "react";
 
 export default function About() {
-  return <div className="justify-center flex text-red-400"> About Page</div>;
+  return (
+    <div>
+      <div className="justify-center flex text-red-400 text-2xl pb-6">
+        About Page
+      </div>
+      <div className="flex justify-start text-xl">
+        This page was built by Pranshu.
+      </div>
+    </div>
+  );
 }

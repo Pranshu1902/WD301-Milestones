@@ -4,6 +4,7 @@ import closeIcon from "../images/close.png";
 import FormTitle from "../FormTitle";
 import { getLocalForms, saveLocalForms } from "../Data";
 import { Link, navigate } from "raviger";
+import previewIcon from "../images/eye.png";
 
 export interface formTemplate {
   id: number;
@@ -141,31 +142,45 @@ export default function Form(props: { id: number }) {
 
   return (
     <div className="w-full divide-y-2 divide-dotted flex flex-col gap-2">
-      <div className="flex justify-center">
-        <div>
-          <FormTitle
-            id={state?.id}
-            label="Form Title"
-            fieldType="text"
-            value={state?.title}
-            onChangeCB={(e) => {
-              updateTitle(e.target.value);
-            }}
-          />
-        </div>
-        <div>
-          <Link
-            className="float-right px-3 py-1 mt-4 font-bold text-white rounded-xl"
-            href="/"
-          >
+      <div className="flex gap-4">
+        <div className="pt-2">
+          <button className="font-bold text-white float-left shadow-xl flex rounded-lg p-2 bg-green-400 hover:bg-green-700">
+            Preview &nbsp;
             <img
-              className="hover:scale-125"
-              src={closeIcon}
-              alt="close"
+              className="flex items-center pt-1"
               width={20}
               height={20}
+              src={previewIcon}
+              alt="preview"
             />
-          </Link>
+          </button>
+        </div>
+        <div className="flex justify-center">
+          <div>
+            <FormTitle
+              id={state?.id}
+              label="Form Title"
+              fieldType="text"
+              value={state?.title}
+              onChangeCB={(e) => {
+                updateTitle(e.target.value);
+              }}
+            />
+          </div>
+          <div>
+            <Link
+              className="float-right px-3 py-1 mt-4 font-bold text-white rounded-xl"
+              href="/"
+            >
+              <img
+                className="hover:scale-125"
+                src={closeIcon}
+                alt="close"
+                width={20}
+                height={20}
+              />
+            </Link>
+          </div>
         </div>
       </div>
 
@@ -189,6 +204,7 @@ export default function Form(props: { id: number }) {
         <div className="float-left">
           <div>
             <label>Name:</label>
+            &nbsp;
             <input
               type="text"
               className="border-2 border-gray-200 rounded-lg p-2 my-4 flex-1"
@@ -200,6 +216,7 @@ export default function Form(props: { id: number }) {
           </div>
           <div className="flex items-center">
             <label>Type:</label>
+            &nbsp;
             <select
               value={newField.type}
               name="type"

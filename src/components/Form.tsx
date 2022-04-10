@@ -85,6 +85,9 @@ export default function Form(props: { closeFormCB: () => void }) {
             onChangeCB={(e) => {
               updateField(e, field.id);
             }}
+            onTypeChangeCB={(e) => {
+              updateField(e, field.id);
+            }}
           />
         ))}
       </div>

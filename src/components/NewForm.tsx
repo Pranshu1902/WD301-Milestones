@@ -88,9 +88,32 @@ export default function Form(props: { id: number }) {
   const updateField = (e: any, id: number) => {
     let newFields = state.fields.map((field) => {
       if (field.id === id) {
+        console.log(field);
         return {
           ...field,
-          value: e.target.value,
+          label: e.target.value,
+        };
+      } else {
+        return field;
+      }
+    });
+
+    let newState = {
+      ...state,
+      fields: newFields,
+    };
+
+    setState(newState);
+
+    updateForms(newState);
+  };
+
+  const updateFieldType = (e: any, id: number) => {
+    let newFields = state.fields.map((field) => {
+      if (field.id === id) {
+        return {
+          ...field,
+          type: e.target.value,
         };
       } else {
         return field;
@@ -187,6 +210,9 @@ export default function Form(props: { id: number }) {
       <div>
         {state?.fields.map((field) => (
           <LabelledInput
+            onTypeChangeCB={(e) => {
+              updateFieldType(e, field.id);
+            }}
             id={field.id}
             label={field.label}
             key={field.id}

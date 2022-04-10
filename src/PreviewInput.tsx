@@ -5,7 +5,7 @@ export default function PreviewInput(props: {
   label: string;
   fieldType: string;
   value: string;
-  //onChangeCB: (e: any) => void;
+  onChangeCB: (e: any) => void;
 }) {
   return (
     <>
@@ -14,7 +14,7 @@ export default function PreviewInput(props: {
         <input
           className="border-2 border-gray-200 rounded-lg p-2 w-full flex-1"
           type={props.fieldType}
-          //onChange={props.onChangeCB}
+          onChange={props.onChangeCB}
           value={props.value}
         />
       </div>

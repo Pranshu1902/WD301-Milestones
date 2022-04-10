@@ -2,7 +2,12 @@ import React, { useState, useEffect } from "react";
 import PreviewInput from "../PreviewInput";
 import closeIcon from "../images/close.png";
 import FormTitle from "../FormTitle";
-import { getLocalForms, saveLocalForms } from "../Data";
+import {
+  getLocalForms,
+  saveLocalForms,
+  getPreviewData,
+  savePreviewData,
+} from "../Data";
 import { Link, navigate } from "raviger";
 import leftArrow from "../images/left.png";
 import rightArrow from "../images/right.png";
@@ -51,23 +56,13 @@ export default function Preview(props: { id: number }) {
     state.id !== props.id && navigate(`/forms/${state.id}`);
   }, [state.id, props.id]);
 
-  const updateForms = (newForm: form) => {
-    let newForms = getLocalForms();
-
-    newForms.map((form) => {
-      form.id === props.id ? (form.fields = newForm.fields) : (form = form);
-    });
-
-    saveLocalForms(newForms);
-  };
-
-  const updateField = (e: any, id: number) => {
+  const updateField = (e: any) => {
     let newFields = state.fields.map((field) => {
-      if (field.id === id) {
+      if (field.id === fieldId) {
         console.log(field);
         return {
           ...field,
-          label: e.target.value,
+          value: e.target.value,
         };
       } else {
         return field;
@@ -80,8 +75,8 @@ export default function Preview(props: { id: number }) {
     };
 
     setState(newState);
-
-    updateForms(newState);
+    let updatedPreviewData = getLocalForms();
+    savePreviewData([...updatedPreviewData, newState]);
   };
 
   return (
@@ -115,17 +110,15 @@ export default function Preview(props: { id: number }) {
               label={field.label}
               fieldType={field.type}
               value={field.value}
+              onChangeCB={(e) => {
+                updateField(e);
+              }}
             ></PreviewInput>
           ) : (
             <div></div>
           )
         )}
       </div>
-      {/* <div className="gap-y-4 p-6"> */}
-      {/* {state.fields.map((field) => (field.id === fieldId ? field.label : ""))} */}
-      {/* <br /> */}
-      {/* <input type="text" className="border-2 rounded-lg" /> */}
-      {/* </div> */}
       <div className="flex gap-6 justify-center">
         <button onClick={prevField}>
           <img

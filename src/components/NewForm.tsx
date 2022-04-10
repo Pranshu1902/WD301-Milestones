@@ -24,13 +24,16 @@ export default function Form(props: { id: number }) {
   const [state, setState] = useState(
     getLocalForms().filter((form) => form.id === props.id).length !== 0
       ? getLocalForms().filter((form) => form.id === props.id)[0]
-      : { id: props.id, title: "Untitled Form", fields: [] }
+      : { id: Number(new Date()), title: "Untitled Form", fields: [] }
   );
-  const [newField, setNewField] = useState("");
+  const [newField, setNewField] = useState({
+    label: "",
+    type: "",
+  });
 
   useEffect(() => {
-    console.log("State id: ", state.id, " props id: ", props.id);
     state.id !== props.id && navigate(`/forms/${state.id}`);
+    // saveLocalForms([...getLocalForms(), state]);
   }, [state.id, props.id]);
 
   const updateForms = (newForm: form) => {
@@ -44,10 +47,16 @@ export default function Form(props: { id: number }) {
   };
 
   const addField = () => {
-    if (newField != "") {
+    if (newField.label != "") {
       let newFields = [
         ...state.fields,
-        { ...formTemplate, id: Number(new Date()), label: newField, value: "" },
+        {
+          ...formTemplate,
+          type: newField.type.length ? newField.type : "text",
+          id: Number(new Date()),
+          label: newField.label,
+          value: "",
+        },
       ];
 
       let finalform = { ...state, fields: newFields };
@@ -57,7 +66,7 @@ export default function Form(props: { id: number }) {
         fields: newFields,
       };
       setState(newState);
-      setNewField("");
+      setNewField({ label: "", type: "" });
 
       updateForms(finalform);
     }
@@ -176,21 +185,48 @@ export default function Form(props: { id: number }) {
         ))}
       </div>
 
-      <div className="flex gap-2">
-        <input
-          type="text"
-          className="border-2 border-gray-200 rounded-lg p-2 my-4 flex-1"
-          value={newField}
-          onChange={(e) => {
-            setNewField(e.target.value);
-          }}
-        />
-        <button
-          className="px-12 m-4 py-1 shadow-lg font-bold text-white bg-blue-500 hover:bg-blue-800 rounded-lg"
-          onClick={addField}
-        >
-          Add Field
-        </button>
+      <div className="gap-2">
+        <div className="float-left">
+          <div>
+            <label>Name:</label>
+            <input
+              type="text"
+              className="border-2 border-gray-200 rounded-lg p-2 my-4 flex-1"
+              value={newField.label}
+              onChange={(e) => {
+                setNewField({ label: e.target.value, type: newField.type });
+              }}
+            />
+          </div>
+          <div className="flex items-center">
+            <label>Type:</label>
+            <select
+              value={newField.type}
+              name="type"
+              id="field"
+              className="py-2 border-2 rounded-lg"
+              onChange={(e) =>
+                setNewField({
+                  ...newField,
+                  type: e.target.value,
+                })
+              }
+            >
+              <option value="text">Text</option>
+              <option value="date">Date</option>
+              <option value="email">Email</option>
+              <option value="number">Number</option>
+            </select>
+          </div>
+        </div>
+        <div className="flex items-bottom">
+          <button
+            className="px-6 m-4 py-1 shadow-lg font-bold text-white bg-blue-500 hover:bg-blue-800 rounded-lg"
+            onClick={addField}
+          >
+            Add Field
+          </button>
+        </div>
       </div>
 
       <div className="flex gap-4 w-full">

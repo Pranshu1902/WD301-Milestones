@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import LabelledInput from "../LabelledInput";
+import PreviewInput from "../PreviewInput";
 import closeIcon from "../images/close.png";
 import FormTitle from "../FormTitle";
 import { getLocalForms, saveLocalForms } from "../Data";
@@ -28,6 +28,24 @@ export default function Preview(props: { id: number }) {
       ? getLocalForms().filter((form) => form.id === props.id)[0]
       : { id: Number(new Date()), title: "Untitled Form", fields: [] }
   );
+
+  const [fieldId, setFieldId] = useState(
+    state.fields.length ? state.fields[0].id : 0
+  );
+
+  const nextField = () => {
+    let index = state.fields.findIndex((field) => field.id === fieldId);
+    if (index < state.fields.length - 1) {
+      setFieldId(state.fields[index + 1].id);
+    }
+  };
+
+  const prevField = () => {
+    let index = state.fields.findIndex((field) => field.id === fieldId);
+    if (index > 0) {
+      setFieldId(state.fields[index - 1].id);
+    }
+  };
 
   useEffect(() => {
     state.id !== props.id && navigate(`/forms/${state.id}`);
@@ -79,27 +97,66 @@ export default function Preview(props: { id: number }) {
           />
         </Link>
       </div>
-      <p className="text-3xl flex">{state.title}</p>
+      <p className="text-3xl flex text-blue-500">{state.title}</p>
       <div>
-        {state.fields.map((field) =>
-          field.id === props.id ? field.label : ""
+        {state.fields.length === 0 ? (
+          <div className="flex justify-center text-red-500 text-xl p-6">
+            Form not completed yet
+          </div>
+        ) : (
+          <div></div>
         )}
       </div>
+      <div>
+        {state.fields.map((field) =>
+          field.id === fieldId ? (
+            <PreviewInput
+              id={field.id}
+              label={field.label}
+              fieldType={field.type}
+              value={field.value}
+            ></PreviewInput>
+          ) : (
+            <div></div>
+          )
+        )}
+      </div>
+      {/* <div className="gap-y-4 p-6"> */}
+      {/* {state.fields.map((field) => (field.id === fieldId ? field.label : ""))} */}
+      {/* <br /> */}
+      {/* <input type="text" className="border-2 rounded-lg" /> */}
+      {/* </div> */}
       <div className="flex gap-6 justify-center">
-        <img
-          className="hover:scale-125"
-          width={30}
-          height={20}
-          src={leftArrow}
-          alt="left"
-        />
-        <img
-          className="hover:scale-125"
-          width={30}
-          height={20}
-          src={rightArrow}
-          alt="right"
-        />
+        <button onClick={prevField}>
+          <img
+            className="hover:scale-125"
+            width={30}
+            height={20}
+            src={leftArrow}
+            alt="left"
+          />
+        </button>
+        <button onClick={nextField}>
+          <img
+            className="hover:scale-125"
+            width={30}
+            height={20}
+            src={rightArrow}
+            alt="right"
+          />
+        </button>
+      </div>
+      <div className="flex justify-center p-4">
+        {fieldId === state.fields[state.fields.length - 1].id ? (
+          <Link
+            href="/"
+            className="rounded-lg bg-green-500 hover:bg-green-700 text-white px-16 py-2"
+          >
+            Submit
+          </Link>
+        ) : (
+          <div></div>
+        )}
       </div>
     </div>
   );

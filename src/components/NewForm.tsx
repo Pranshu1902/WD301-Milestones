@@ -37,7 +37,9 @@ export default function Form(props: { id: number }) {
   }, [state.id, props.id]);
 
   useEffect(() => {
-    getLocalForms().length === 0 ? saveLocalForms([state]) : console.log("");
+    getLocalForms().filter((form) => form.id === state.id).length === 0
+      ? saveLocalForms([...getLocalForms(), state])
+      : console.log("");
   });
 
   const updateForms = (newForm: form) => {

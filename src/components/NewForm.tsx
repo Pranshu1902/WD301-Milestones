@@ -12,15 +12,10 @@ export interface formTemplate {
   type: string;
   label: string;
   value: string;
+  options: string[];
 }
 
-export interface form {
-  id: number;
-  title: string;
-  fields: formTemplate[];
-}
-
-const formTemplate = { type: "text", label: "", value: "" };
+const formTemplate = { type: "text", label: "", value: "", options: [] };
 
 export default function Form(props: { id: number }) {
   const [state, setState] = useState(
@@ -55,6 +50,13 @@ export default function Form(props: { id: number }) {
     });
 
     saveLocalForms(newForms);
+  };
+
+  const addOption = (id: number, value: string) => {
+    state.fields.map((field) => {
+      field.id === id ? field.options.push(value) : (field = field);
+    });
+    saveLocalForms([...getLocalForms(), state]);
   };
 
   const addField = () => {
@@ -235,6 +237,8 @@ export default function Form(props: { id: number }) {
             onChangeCB={(e) => {
               updateField(e, field.id);
             }}
+            options={field.options}
+            addOptionCB={(e) => addOption(field.id, field.value)}
           />
         ))}
       </div>
@@ -268,10 +272,15 @@ export default function Form(props: { id: number }) {
                 })
               }
             >
+              <option value="">Select an option</option>
               <option value="text">Text</option>
               <option value="date">Date</option>
               <option value="email">Email</option>
               <option value="number">Number</option>
+              <option value="dropdown">Dropdown</option>
+              <option value="radio">Radio Buttons</option>
+              <option value="textarea">Text Area</option>
+              <option value="multidropdown">Multi-select dropdown</option>
             </select>
           </div>
         </div>

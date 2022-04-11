@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import PreviewInput from "../PreviewInput";
 import closeIcon from "../images/close.png";
-import FormTitle from "../FormTitle";
 import {
   getLocalForms,
   saveLocalForms,
@@ -17,6 +16,7 @@ export interface formTemplate {
   type: string;
   label: string;
   value: string;
+  options: string[];
 }
 
 export interface form {
@@ -113,6 +113,7 @@ export default function Preview(props: { id: number }) {
               onChangeCB={(e) => {
                 updateField(e);
               }}
+              options={field.options.length !== 0 ? field.options : []}
             ></PreviewInput>
           ) : (
             <div></div>

@@ -3,6 +3,7 @@ import { Link, useQueryParams } from "raviger";
 import open from "../images/open.png";
 import deleteIcon from "../images/delete.png";
 import { getLocalForms, saveLocalForms } from "../Data";
+import { formType } from "../types/formType";
 
 export interface formTemplate {
   id: number;
@@ -29,7 +30,7 @@ export default function Home() {
   };
 
   const generateNewForm = () => {
-    const newform: form = {
+    const newform: formType = {
       id: Number(new Date()),
       title: "New Form",
       fields: [],

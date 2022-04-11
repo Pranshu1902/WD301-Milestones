@@ -1,11 +1,12 @@
 import React from "react";
 import { formTemplate, form } from "./components/Home";
+import { formType } from "./types/formType";
 
-export const saveLocalForms = (localForms: form[]) => {
+export const saveLocalForms = (localForms: formType[]) => {
   localStorage.setItem("savedForms", JSON.stringify(localForms));
 };
 
-export const getLocalForms: () => form[] = () => {
+export const getLocalForms: () => formType[] = () => {
   const savedFormsJSON = localStorage.getItem("savedForms");
   return savedFormsJSON ? JSON.parse(savedFormsJSON) : [];
 };

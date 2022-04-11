@@ -6,6 +6,11 @@ type normalForm = {
   fields: formTemplate[];
 };
 
+// new interface to store options
+interface optionFields extends formTemplate {
+  option: string[];
+}
+
 type dropdownForm = {
   id: number;
   title: string;

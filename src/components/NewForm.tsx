@@ -5,6 +5,7 @@ import FormTitle from "../FormTitle";
 import { getLocalForms, saveLocalForms } from "../Data";
 import { Link, navigate } from "raviger";
 import previewIcon from "../images/eye.png";
+import { formType } from "../types/formType";
 
 export interface formTemplate {
   id: number;
@@ -40,7 +41,7 @@ export default function Form(props: { id: number }) {
     getLocalForms().length === 0 ? saveLocalForms([state]) : console.log("");
   });
 
-  const updateForms = (newForm: form) => {
+  const updateForms = (newForm: formType) => {
     let newForms = getLocalForms();
 
     {

@@ -12,51 +12,6 @@ export default function LabelledInput(props: {
   onChangeCB: (e: any) => void;
   onTypeChangeCB: (e: any) => void;
 }) {
-  /*const [state, setState] = useState(
-    getLocalForms().filter((form) => form.id === props.id)[0]
-  );
-
-  const [option, setOption] = useState("");
-
-  const addOption = (id: number) => {
-    if (option !== "") {
-      let newFields = state.fields.map((field) => {
-        if (field.id === id) {
-          return {
-            ...field,
-            options: [...field.options, option],
-          };
-        } else {
-          return field;
-        }
-      });
-
-      /*state.fields.map((field) => {
-        field.id === id ? field.options.push(option) : (field = field);
-      });
-
-      let newState = {
-        ...state,
-        fields: newFields,
-      };
-
-      setState(newState);
-      setOption("");
-
-      // updating the form
-      let newForms = getLocalForms();
-      {
-        getLocalForms().filter((form) => form.id === state.id).length !== 0
-          ? saveLocalForms([...getLocalForms(), state])
-          : console.log("Form saved");
-      }
-      newForms.map((form) => {
-        form.id === props.id ? (form.fields = newState.fields) : (form = form);
-      });
-      saveLocalForms(newForms);
-    }
-  };*/
-
   return (
     <>
       <div className="flex gap-4">

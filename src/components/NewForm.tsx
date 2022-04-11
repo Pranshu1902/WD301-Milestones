@@ -314,8 +314,8 @@ export default function Form(props: { id: number }) {
                       />
                       &nbsp;
                       <button
-                        onClick={(_) => addOption(field.id)}
-                        className="ml-6 px-12 py-1 shadow-lg bg-red-500 hover:bg-red-700 rounded-lg font-bold text-white"
+                        className="mt-2 ml-6 px-12 py-1 shadow-lg bg-red-500 hover:bg-red-700 rounded-lg font-bold text-white"
+                        onClick={() => addOption(field.id)}
                       >
                         Add Option
                       </button>
@@ -337,7 +337,7 @@ export default function Form(props: { id: number }) {
                   </div>
                 }
                 <button
-                  onClick={(_) => removeField(props.id)}
+                  onClick={(_) => removeField(field.id)}
                   className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 my-2 rounded-lg"
                 >
                   Remove

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useQueryParams } from "raviger";
 import open from "../images/open.png";
 import deleteIcon from "../images/delete.png";
+import previewIcon from "../images/eye.png";
 import { getLocalForms, saveLocalForms } from "../Data";
 import { formType } from "../types/formType";
 
@@ -80,13 +81,26 @@ export default function Home() {
               />
             </button>
             <Link
-              className="bg-blue-500 text-white font-bold rounded-lg px-4 py-2 hover:bg-blue-700 float-right"
+              className="ml-2 bg-blue-500 text-white font-bold rounded-lg px-4 py-2 hover:bg-blue-700 float-right"
               href={`/forms/${form.id}`}
             >
               Open
               <img
                 className="float-right pt-0.5"
                 src={open}
+                alt="open"
+                width={20}
+                height={20}
+              />
+            </Link>
+            <Link
+              className="bg-green-500 text-white font-bold rounded-lg px-4 py-2 hover:bg-green-700 float-right"
+              href={`/preview/${form.id}`}
+            >
+              Preview
+              <img
+                className="float-right pt-0.5"
+                src={previewIcon}
                 alt="open"
                 width={20}
                 height={20}

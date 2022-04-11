@@ -25,7 +25,7 @@ export interface form {
   fields: formTemplate[];
 }
 
-const formTemplate = { type: "text", label: "", value: "" };
+// const formTemplate = { type: "text", label: "", value: "" };
 
 export default function Preview(props: { id: number }) {
   const [state, setState] = useState(
@@ -106,6 +106,7 @@ export default function Preview(props: { id: number }) {
         {state.fields.map((field) =>
           field.id === fieldId ? (
             <PreviewInput
+              key={field.id}
               id={field.id}
               label={field.label}
               fieldType={field.type}

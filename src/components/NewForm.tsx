@@ -54,17 +54,6 @@ export default function Form(props: { id: number }) {
 
   const [option, setOption] = useState("");
 
-  const addOption = (id: number, value: string) => {
-    if (option !== "") {
-      state.fields.map((field) => {
-        field.id === id ? field.options.push(value) : (field = field);
-      });
-      saveLocalForms([...getLocalForms(), state]);
-
-      setOption("");
-    }
-  };
-
   const addField = () => {
     if (newField.label != "") {
       let newFields = [
@@ -87,6 +76,11 @@ export default function Form(props: { id: number }) {
       };
       setState(newState);
       setNewField({ label: "", type: "" });
+
+      console.log("current status");
+      newState.fields.map((field) => {
+        console.log(field);
+      });
 
       updateForms(finalform);
     }
@@ -182,9 +176,36 @@ export default function Form(props: { id: number }) {
     saveLocalForms(allForms);
   };
 
+  // handling new field types
+  const addOption = (id: number) => {
+    if (option !== "") {
+      let newFields = state.fields.map((field) => {
+        if (field.id === id) {
+          return {
+            ...field,
+            options: [...field.options, option],
+          };
+        } else {
+          return field;
+        }
+      });
+
+      let newState = {
+        ...state,
+        fields: newFields,
+      };
+
+      setState(newState);
+      setOption("");
+
+      // updating the form
+      updateForms(newState);
+    }
+  };
+
   return (
     <div className="w-full divide-y-2 divide-dotted flex flex-col gap-2">
-      <div className="flex gap-4">
+      <div className="flex gap-24 justify-center">
         <div className="pt-2">
           <Link
             href={`/preview/${state.id}`}
@@ -200,56 +221,131 @@ export default function Form(props: { id: number }) {
             />
           </Link>
         </div>
-        <div className="flex justify-center">
-          <div>
-            <FormTitle
-              id={state?.id}
-              label="Form Title"
-              fieldType="text"
-              value={state?.title}
-              onChangeCB={(e) => {
-                updateTitle(e.target.value);
-              }}
+        <div>
+          <FormTitle
+            id={state?.id}
+            label="Form Title"
+            fieldType="text"
+            value={state?.title}
+            onChangeCB={(e) => {
+              updateTitle(e.target.value);
+            }}
+          />
+        </div>
+        <div>
+          <Link
+            className="float-right px-3 py-1 mt-4 font-bold text-white rounded-xl"
+            href="/"
+          >
+            <img
+              className="hover:scale-125"
+              src={closeIcon}
+              alt="close"
+              width={20}
+              height={20}
             />
-          </div>
-          <div>
-            <Link
-              className="float-right px-3 py-1 mt-4 font-bold text-white rounded-xl"
-              href="/"
-            >
-              <img
-                className="hover:scale-125"
-                src={closeIcon}
-                alt="close"
-                width={20}
-                height={20}
-              />
-            </Link>
-          </div>
+          </Link>
         </div>
       </div>
 
       <div>
-        {state?.fields.map((field) => (
-          <LabelledInput
-            onTypeChangeCB={(e) => {
-              updateFieldType(e, field.id);
-            }}
-            id={field.id}
-            label={field.label}
-            key={field.id}
-            fieldType={field.type}
-            removeFieldCB={removeField}
-            value={field.value}
-            optionValue={option}
-            setOptionCB={setOption}
-            onChangeCB={(e) => {
-              updateField(e, field.id);
-            }}
-            options={field.options}
-            addOptionCB={(e) => addOption(field.id, field.value)}
-          />
-        ))}
+        {state?.fields.map((field) =>
+          field.type === "text" ||
+          field.type === "date" ||
+          field.type === "email" ||
+          field.type === "number" ? (
+            <LabelledInput
+              onTypeChangeCB={(e) => {
+                updateFieldType(e, field.id);
+              }}
+              id={field.id}
+              label={field.label}
+              key={field.id}
+              fieldType={field.type}
+              removeFieldCB={removeField}
+              value={field.value}
+              optionValue={option}
+              onChangeCB={(e) => {
+                updateField(e, field.id);
+              }}
+              options={field.options}
+            />
+          ) : (
+            <>
+              <div className="flex gap-4">
+                <input
+                  className="border-2 border-gray-200 rounded-lg p-2 my-2 w-full"
+                  type={"text"}
+                  onChange={(e) => {
+                    updateField(e, field.id);
+                  }}
+                  value={field.label}
+                />
+                <select
+                  name="type"
+                  id="field"
+                  className="p-2 my-2 border-2 rounded-lg flex"
+                  onChange={(e) => {
+                    updateFieldType(e, field.id);
+                  }}
+                  value={field.type}
+                >
+                  <option value="">Select an option</option>
+                  <option value="text">Text</option>
+                  <option value="date">Date</option>
+                  <option value="email">Email</option>
+                  <option value="number">Number</option>
+                  <option value="dropdown">Dropdown</option>
+                  <option value="radio">Radio Buttons</option>
+                  <option value="textarea">Text Area</option>
+                  <option value="multidropdown">Multi-select dropdown</option>
+                </select>
+
+                {
+                  <div>
+                    <div className="flex">
+                      <input
+                        type={"text"}
+                        className="border-2 border-gray-200 rounded-lg p-2 my-2 flex"
+                        value={field.options}
+                        onChange={(e) => {
+                          setOption(e.target.value);
+                        }}
+                      />
+                      &nbsp;
+                      <button
+                        onClick={(_) => addOption(field.id)}
+                        className="ml-6 px-12 py-1 shadow-lg bg-red-500 hover:bg-red-700 rounded-lg font-bold text-white"
+                      >
+                        Add Option
+                      </button>
+                    </div>
+                    <select
+                      name="options"
+                      id="options"
+                      className="p-2 my-2 border-2 rounded-lg"
+                      onChange={(e) => {
+                        updateFieldType(e, field.id);
+                      }}
+                      value={field.type}
+                    >
+                      <option value="">Select an option</option>
+                      {field.options.map((option) => (
+                        <option value={option}>{option}</option>
+                      ))}
+                    </select>
+                  </div>
+                }
+                <button
+                  onClick={(_) => removeField(props.id)}
+                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 my-2 rounded-lg"
+                >
+                  Remove
+                </button>
+              </div>
+            </>
+          )
+        )}
       </div>
 
       <div className="gap-2">

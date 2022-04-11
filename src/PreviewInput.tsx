@@ -19,7 +19,7 @@ export default function PreviewInput(props: {
             value={props.value}
           ></textarea>
         ) : props.fieldType === "dropdown" ? (
-          <select>
+          <select className="rounded-lg px-12 py-2">
             {props.options.map((option) => {
               <option value={option}>{option}</option>;
             })}
@@ -37,7 +37,7 @@ export default function PreviewInput(props: {
         ) : (
           <input
             className="border-2 border-gray-200 rounded-lg p-2 my-2 w-full flex-1"
-            type={"text"}
+            type={props.fieldType}
             onChange={props.onChangeCB}
             value={props.value}
           />

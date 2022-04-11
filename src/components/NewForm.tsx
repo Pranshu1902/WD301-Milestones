@@ -52,11 +52,17 @@ export default function Form(props: { id: number }) {
     saveLocalForms(newForms);
   };
 
+  const [option, setOption] = useState("");
+
   const addOption = (id: number, value: string) => {
-    state.fields.map((field) => {
-      field.id === id ? field.options.push(value) : (field = field);
-    });
-    saveLocalForms([...getLocalForms(), state]);
+    if (option !== "") {
+      state.fields.map((field) => {
+        field.id === id ? field.options.push(value) : (field = field);
+      });
+      saveLocalForms([...getLocalForms(), state]);
+
+      setOption("");
+    }
   };
 
   const addField = () => {
@@ -69,6 +75,7 @@ export default function Form(props: { id: number }) {
           id: Number(new Date()),
           label: newField.label,
           value: "",
+          options: [],
         },
       ];
 
@@ -234,6 +241,8 @@ export default function Form(props: { id: number }) {
             fieldType={field.type}
             removeFieldCB={removeField}
             value={field.value}
+            optionValue={option}
+            setOptionCB={setOption}
             onChangeCB={(e) => {
               updateField(e, field.id);
             }}

@@ -109,9 +109,10 @@ export default function Preview(props: { id: number }) {
           <div>
             {state.fields.map((field) =>
               field.id === fieldId ? (
-                <div>
+                <div key={field.id}>
                   <div key={field.id}>
                     <PreviewInput
+                      key={field.id}
                       id={field.id}
                       label={field.label}
                       fieldType={field.type}
@@ -155,7 +156,7 @@ export default function Preview(props: { id: number }) {
                   </div>
                 </div>
               ) : (
-                <div></div>
+                <div key={field.id}></div>
               )
             )}
           </div>

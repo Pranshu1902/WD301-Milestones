@@ -113,35 +113,37 @@ export default function Preview(props: { id: number }) {
         {state.fields.map((field) =>
           field.id === fieldId ? (
             <div>
-              <PreviewInput
-                key={field.id}
-                id={field.id}
-                label={field.label}
-                fieldType={field.type}
-                value={field.value}
-                onChangeCB={(e) => {
-                  updateField(e);
-                }}
-              ></PreviewInput>
-              <div className="flex gap-6 justify-center">
-                <button onClick={prevField}>
-                  <img
-                    className="hover:scale-125"
-                    width={30}
-                    height={20}
-                    src={leftArrow}
-                    alt="left"
-                  />
-                </button>
-                <button onClick={nextField}>
-                  <img
-                    className="hover:scale-125"
-                    width={30}
-                    height={20}
-                    src={rightArrow}
-                    alt="right"
-                  />
-                </button>
+              <div>
+                <PreviewInput
+                  key={field.id}
+                  id={field.id}
+                  label={field.label}
+                  fieldType={field.type}
+                  value={field.value}
+                  onChangeCB={(e) => {
+                    updateField(e);
+                  }}
+                />
+                <div className="flex gap-6 justify-center">
+                  <button onClick={prevField}>
+                    <img
+                      className="hover:scale-125"
+                      width={30}
+                      height={20}
+                      src={leftArrow}
+                      alt="left"
+                    />
+                  </button>
+                  <button onClick={nextField}>
+                    <img
+                      className="hover:scale-125"
+                      width={30}
+                      height={20}
+                      src={rightArrow}
+                      alt="right"
+                    />
+                  </button>
+                </div>
               </div>
               <div className="flex justify-center p-4">
                 {fieldId === state.fields[state.fields.length - 1].id ? (

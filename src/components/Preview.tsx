@@ -59,7 +59,6 @@ export default function Preview(props: { id: number }) {
   const updateField = (e: any) => {
     let newFields = state.fields.map((field) => {
       if (field.id === fieldId) {
-        console.log(field);
         return {
           ...field,
           value: e.target.value,
@@ -75,8 +74,9 @@ export default function Preview(props: { id: number }) {
     };
 
     setState(newState);
-    let updatedPreviewData = getLocalForms();
-    savePreviewData([...updatedPreviewData, newState]);
+    let forms = getPreviewData();
+    let updatedPreviewData = [...forms, { id: fieldId, responses: newFields }];
+    savePreviewData(updatedPreviewData);
   };
 
   return (

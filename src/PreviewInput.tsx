@@ -20,20 +20,21 @@ export default function PreviewInput(props: {
           ></textarea>
         ) : props.fieldType === "dropdown" ? (
           <select className="rounded-lg px-12 py-2 border-2">
-            {props.options.map((option) => {
-              <option value={option}>{option}</option>;
-            })}
+            <option value="">Select an option</option>
+            {props.options.map((option) => (
+              <option value={option}>{option}</option>
+            ))}
           </select>
         ) : props.fieldType === "radio" ? (
-          <select className="rounded-lg px-12 py-2 border-2">
+          <div className="rounded-lg px-12 py-2 border-2">
             {props.options.map((option) => {
-              <input type={"radio"} value={option}>
+              <input type="radio" value={option} name={props.label}>
                 {option}
               </input>;
               <label>{option}</label>;
               <br />;
             })}
-          </select>
+          </div>
         ) : props.fieldType === "multidropdown" ? (
           <select className="rounded-lg px-12 py-2 border-2" multiple>
             {props.options.map((option) => {

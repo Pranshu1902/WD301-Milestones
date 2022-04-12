@@ -106,61 +106,59 @@ export default function Preview(props: { id: number }) {
             </Link>
           </div>
         ) : (
-          <div></div>
-        )}
-      </div>
-      <div>
-        {state.fields.map((field) =>
-          field.id === fieldId ? (
-            <div>
-              <div>
-                <PreviewInput
-                  key={field.id}
-                  id={field.id}
-                  label={field.label}
-                  fieldType={field.type}
-                  value={field.value}
-                  onChangeCB={(e) => {
-                    updateField(e);
-                  }}
-                />
-                <div className="flex gap-6 justify-center">
-                  <button onClick={prevField}>
-                    <img
-                      className="hover:scale-125"
-                      width={30}
-                      height={20}
-                      src={leftArrow}
-                      alt="left"
+          <div>
+            {state.fields.map((field) =>
+              field.id === fieldId ? (
+                <div>
+                  <div key={field.id}>
+                    <PreviewInput
+                      id={field.id}
+                      label={field.label}
+                      fieldType={field.type}
+                      value={field.value}
+                      onChangeCB={(e) => {
+                        updateField(e);
+                      }}
                     />
-                  </button>
-                  <button onClick={nextField}>
-                    <img
-                      className="hover:scale-125"
-                      width={30}
-                      height={20}
-                      src={rightArrow}
-                      alt="right"
-                    />
-                  </button>
+                    <div className="flex gap-6 justify-center">
+                      <button onClick={prevField}>
+                        <img
+                          className="hover:scale-125"
+                          width={30}
+                          height={20}
+                          src={leftArrow}
+                          alt="left"
+                        />
+                      </button>
+                      <button onClick={nextField}>
+                        <img
+                          className="hover:scale-125"
+                          width={30}
+                          height={20}
+                          src={rightArrow}
+                          alt="right"
+                        />
+                      </button>
+                    </div>
+                  </div>
+                  <div className="flex justify-center p-4">
+                    {fieldId === state.fields[state.fields.length - 1].id ? (
+                      <Link
+                        href="/"
+                        className="rounded-lg bg-green-500 hover:bg-green-700 text-white px-16 py-2"
+                      >
+                        Submit
+                      </Link>
+                    ) : (
+                      <div></div>
+                    )}
+                  </div>
                 </div>
-              </div>
-              <div className="flex justify-center p-4">
-                {fieldId === state.fields[state.fields.length - 1].id ? (
-                  <Link
-                    href="/"
-                    className="rounded-lg bg-green-500 hover:bg-green-700 text-white px-16 py-2"
-                  >
-                    Submit
-                  </Link>
-                ) : (
-                  <div></div>
-                )}
-              </div>
-            </div>
-          ) : (
-            <div></div>
-          )
+              ) : (
+                <div></div>
+              )
+            )}
+          </div>
         )}
       </div>
     </div>

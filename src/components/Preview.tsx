@@ -1,12 +1,7 @@
 import React, { useState, useEffect } from "react";
 import PreviewInput from "../PreviewInput";
 import closeIcon from "../images/close.png";
-import {
-  getLocalForms,
-  saveLocalForms,
-  getPreviewData,
-  savePreviewData,
-} from "../Data";
+import { getLocalForms, saveLocalForms, savePreviewData } from "../Data";
 import { Link, navigate } from "raviger";
 import leftArrow from "../images/left.png";
 import rightArrow from "../images/right.png";
@@ -95,62 +90,72 @@ export default function Preview(props: { id: number }) {
       <p className="text-3xl flex text-blue-500">{state.title}</p>
       <div>
         {state.fields.length === 0 ? (
-          <div className="flex justify-center text-red-500 text-xl p-6">
-            Form not completed yet
+          <div className="justify-center p-6">
+            <p className="flex text-red-500 text-xl">Form not completed yet</p>
+            <br />
+            <Link
+              href="/"
+              className="flex justify-center py-2 rounded-lg bg-green-500 text-white font-bold hover:bg-green-700"
+            >
+              Home
+            </Link>
           </div>
         ) : (
-          <div></div>
-        )}
-      </div>
-      <div>
-        {state.fields.map((field) =>
-          field.id === fieldId ? (
-            <PreviewInput
-              key={field.id}
-              id={field.id}
-              label={field.label}
-              fieldType={field.type}
-              value={field.value}
-              onChangeCB={(e) => {
-                updateField(e);
-              }}
-              options={field.options.length !== 0 ? field.options : []}
-            ></PreviewInput>
-          ) : (
-            <div></div>
-          )
-        )}
-      </div>
-      <div className="flex gap-6 justify-center">
-        <button onClick={prevField}>
-          <img
-            className="hover:scale-125"
-            width={30}
-            height={20}
-            src={leftArrow}
-            alt="left"
-          />
-        </button>
-        <button onClick={nextField}>
-          <img
-            className="hover:scale-125"
-            width={30}
-            height={20}
-            src={rightArrow}
-            alt="right"
-          />
-        </button>
-      </div>
-      <div className="flex justify-center p-4">
-        {fieldId === state.fields[state.fields.length - 1].id ? (
-          <Link
-            href="/"
-            className="rounded-lg bg-green-500 hover:bg-green-700 text-white px-16 py-2"
-          >
-            Submit
-          </Link>
-        ) : (
-          <div></div>
+          <div>
+            {state.fields.map((field) =>
+              field.id === fieldId ? (
+                <div key={field.id}>
+                  <div>
+                    <PreviewInput
+                      key={field.id}
+                      id={field.id}
+                      label={field.label}
+                      fieldType={field.type}
+                      value={field.value}
+                      onChangeCB={(e) => {
+                        updateField(e);
+                      }}
+                      options={field.options ? field.options : []}
+                    />
+                    <div className="flex gap-6 justify-center">
+                      <button onClick={prevField}>
+                        <img
+                          className="hover:scale-125"
+                          width={30}
+                          height={20}
+                          src={leftArrow}
+                          alt="left"
+                        />
+                      </button>
+                      <button onClick={nextField}>
+                        <img
+                          className="hover:scale-125"
+                          width={30}
+                          height={20}
+                          src={rightArrow}
+                          alt="right"
+                        />
+                      </button>
+                    </div>
+                  </div>
+                  <div className="flex justify-center p-4">
+                    {fieldId === state.fields[state.fields.length - 1].id ? (
+                      <Link
+                        href="/"
+                        className="rounded-lg bg-green-500 hover:bg-green-700 text-white px-16 py-2"
+                      >
+                        Submit
+                      </Link>
+                    ) : (
+                      <div></div>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <div key={field.id}></div>
+              )
+            )}
+          </div>
         )}
       </div>
     </div>

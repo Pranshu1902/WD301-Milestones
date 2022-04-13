@@ -51,7 +51,7 @@ export default function Home() {
           setQuery({ search: searchString });
         }}
       >
-        <label className="text-red-500">Search</label>
+        <label className="text-red-500">🔍Search</label>
         <input
           type="text"
           name="search"

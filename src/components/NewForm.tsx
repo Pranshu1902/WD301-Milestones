@@ -6,6 +6,7 @@ import { getLocalForms, saveLocalForms } from "../Data";
 import { Link, navigate } from "raviger";
 import previewIcon from "../images/eye.png";
 import { formType } from "../types/formType";
+import OptionsInput from "../OptionsInput";
 
 export interface formTemplate {
   id: number;
@@ -15,7 +16,7 @@ export interface formTemplate {
   options: string[];
 }
 
-const formTemplate = { type: "text", label: "", value: "", options: [] };
+const formTemplate = { id: 1, type: "text", label: "", value: "", options: [] };
 
 export default function Form(props: { id: number }) {
   const [state, setState] = useState(
@@ -77,12 +78,9 @@ export default function Form(props: { id: number }) {
       setState(newState);
       setNewField({ label: "", type: "" });
 
-      console.log("current status");
-      newState.fields.map((field) => {
-        console.log(field);
-      });
-
       updateForms(finalform);
+
+      console.log(getLocalForms());
     }
   };
 
@@ -178,7 +176,12 @@ export default function Form(props: { id: number }) {
 
   // handling new field types
   const addOption = (id: number) => {
-    if (option !== "") {
+    if (
+      option !== "" &&
+      state.fields
+        .filter((field) => field.id === id)[0]
+        .options.includes(option) === false
+    ) {
       let newFields = state.fields.map((field) => {
         if (field.id === id) {
           return {
@@ -201,6 +204,49 @@ export default function Form(props: { id: number }) {
       // updating the form
       updateForms(newState);
     }
+  };
+
+  // updating the options input
+  const updateOptions = (e: string, id: number) => {
+    let newFields = state.fields.map((field) => {
+      if (field.id === id) {
+        return {
+          ...field,
+          input: [...field.options, e],
+        };
+      } else {
+        return field;
+      }
+    });
+
+    let newState = {
+      ...state,
+      fields: newFields,
+    };
+    setOption(e);
+    setState(newState);
+    updateForms(newState);
+  };
+
+  const removeOption = (id: number, option: string) => {
+    let newFields = state.fields.map((field) => {
+      if (field.id === id) {
+        return {
+          ...field,
+          options: field.options.filter((opt) => opt !== option),
+        };
+      } else {
+        return field;
+      }
+    });
+
+    let newState = {
+      ...state,
+      fields: newFields,
+    };
+
+    setState(newState);
+    updateForms(newState);
   };
 
   return (
@@ -249,7 +295,7 @@ export default function Form(props: { id: number }) {
       </div>
 
       <div>
-        {state?.fields.map((field) =>
+        {state.fields.map((field) =>
           field.type === "text" ||
           field.type === "date" ||
           field.type === "email" ||
@@ -271,79 +317,22 @@ export default function Form(props: { id: number }) {
               options={field.options}
             />
           ) : (
-            <>
-              <div className="flex gap-4">
-                <input
-                  className="border-2 border-gray-200 rounded-lg p-2 my-2 w-full"
-                  type={"text"}
-                  onChange={(e) => {
-                    updateField(e, field.id);
-                  }}
-                  value={field.label}
-                />
-                <select
-                  name="type"
-                  id="field"
-                  className="p-2 my-2 border-2 rounded-lg flex"
-                  onChange={(e) => {
-                    updateFieldType(e, field.id);
-                  }}
-                  value={field.type}
-                >
-                  <option value="">Select an option</option>
-                  <option value="text">Text</option>
-                  <option value="date">Date</option>
-                  <option value="email">Email</option>
-                  <option value="number">Number</option>
-                  <option value="dropdown">Dropdown</option>
-                  <option value="radio">Radio Buttons</option>
-                  <option value="textarea">Text Area</option>
-                  <option value="multidropdown">Multi-select dropdown</option>
-                </select>
-
-                {
-                  <div>
-                    <div className="flex">
-                      <input
-                        type={"text"}
-                        className="border-2 border-gray-200 rounded-lg p-2 my-2 flex"
-                        value={field.options}
-                        onChange={(e) => {
-                          setOption(e.target.value);
-                        }}
-                      />
-                      &nbsp;
-                      <button
-                        className="mt-2 ml-6 px-12 py-1 shadow-lg bg-red-500 hover:bg-red-700 rounded-lg font-bold text-white"
-                        onClick={() => addOption(field.id)}
-                      >
-                        Add Option
-                      </button>
-                    </div>
-                    <select
-                      name="options"
-                      id="options"
-                      className="p-2 my-2 border-2 rounded-lg"
-                      onChange={(e) => {
-                        updateFieldType(e, field.id);
-                      }}
-                      value={field.type}
-                    >
-                      <option value="">Select an option</option>
-                      {field.options.map((option) => (
-                        <option value={option}>{option}</option>
-                      ))}
-                    </select>
-                  </div>
-                }
-                <button
-                  onClick={(_) => removeField(field.id)}
-                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 my-2 rounded-lg"
-                >
-                  Remove
-                </button>
-              </div>
-            </>
+            <OptionsInput
+              key={field.id}
+              id={field.id}
+              label={field.label}
+              fieldType={field.type}
+              value={field.value}
+              type={field.type}
+              options={field.options}
+              option={option}
+              updateField={updateField}
+              updateOptions={updateOptions}
+              updateFieldType={updateFieldType}
+              addNewOption={addOption}
+              removeField={removeField}
+              removeOption={removeOption}
+            />
           )
         )}
       </div>

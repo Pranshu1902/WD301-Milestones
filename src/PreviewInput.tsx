@@ -22,15 +22,20 @@ export default function PreviewInput(props: {
           <select className="rounded-lg px-12 py-2 border-2">
             <option value="">Select an option</option>
             {props.options.map((option) => (
-              <option value={option}>{option}</option>
+              <option key={option} value={option}>
+                {option}
+              </option>
             ))}
           </select>
         ) : props.fieldType === "radio" ? (
           <div className="rounded-lg px-12 py-2 border-2">
             {props.options.map((option) => {
-              <input type="radio" value={option} name={props.label}>
-                {option}
-              </input>;
+              <input
+                key={option}
+                type={"radio"}
+                value={option}
+                name={props.label}
+              />;
               <label>{option}</label>;
               <br />;
             })}

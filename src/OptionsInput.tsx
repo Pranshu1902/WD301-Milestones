@@ -86,6 +86,13 @@ export default function OptionsInput(props: {
               </li>
             ))}
           </ul>
+          {props.options.length === 0 ? (
+            <div className="bg-red-300 text-red-600 rounded-lg p-2">
+              Warning: Please add atleast 1 option
+            </div>
+          ) : (
+            <div></div>
+          )}
         </div>
 
         <button

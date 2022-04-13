@@ -5,6 +5,7 @@ import { getLocalForms, saveLocalForms, savePreviewData } from "../Data";
 import { Link, navigate } from "raviger";
 import leftArrow from "../images/left.png";
 import rightArrow from "../images/right.png";
+import { stat } from "fs/promises";
 
 export interface formTemplate {
   id: number;
@@ -89,7 +90,16 @@ export default function Preview(props: { id: number }) {
       </div>
       <p className="text-3xl flex text-blue-500">{state.title}</p>
       <div>
-        {state.fields.length === 0 ? (
+        {state.fields.length === 0 ||
+        (state.fields.filter(
+          (field) => field.type === ("radio" || "dropdown" || "mutlidropdown")
+        ).length !== 0 &&
+          state.fields
+            .filter(
+              (field) =>
+                field.type === ("radio" || "dropdown" || "mutlidropdown")
+            )
+            .filter((field) => field.options.length === 0).length !== 0) ? (
           <div className="justify-center p-6">
             <p className="flex text-red-500 text-xl">Form not completed yet</p>
             <br />

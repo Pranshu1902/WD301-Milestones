@@ -304,6 +304,7 @@ export default function Form(props: { id: number }) {
               value={field.value}
               type={field.type}
               options={field.options}
+              option={option}
               updateField={updateField}
               updateOptions={updateOptions}
               updateFieldType={updateFieldType}

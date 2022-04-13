@@ -7,6 +7,7 @@ export default function OptionsInput(props: {
   value: string;
   type: string;
   options: string[];
+  option: string;
   // onChangeCB: (e: any) => void;
   updateField: (e: any, id: number) => void;
   updateOptions: (e: any, id: number) => void;
@@ -14,7 +15,6 @@ export default function OptionsInput(props: {
   addNewOption: (id: number) => void;
   removeField: (id: number) => void;
 }) {
-  const [option, setOption] = useState("");
   return (
     <div key={props.id}>
       <div className="flex gap-4">
@@ -51,7 +51,7 @@ export default function OptionsInput(props: {
             <input
               type={"text"}
               className="border-2 border-gray-200 rounded-lg p-2 my-2 flex"
-              value={option}
+              value={props.option}
               id={props.id.toString()}
               onChange={(e) => {
                 props.updateOptions(e.target.value, props.id);

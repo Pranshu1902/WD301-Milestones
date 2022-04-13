@@ -228,6 +228,27 @@ export default function Form(props: { id: number }) {
     updateForms(newState);
   };
 
+  const removeOption = (id: number, option: string) => {
+    let newFields = state.fields.map((field) => {
+      if (field.id === id) {
+        return {
+          ...field,
+          options: field.options.filter((opt) => opt !== option),
+        };
+      } else {
+        return field;
+      }
+    });
+
+    let newState = {
+      ...state,
+      fields: newFields,
+    };
+
+    setState(newState);
+    updateForms(newState);
+  };
+
   return (
     <div className="w-full divide-y-2 divide-dotted flex flex-col gap-2">
       <div className="flex gap-24 justify-center">
@@ -310,6 +331,7 @@ export default function Form(props: { id: number }) {
               updateFieldType={updateFieldType}
               addNewOption={addOption}
               removeField={removeField}
+              removeOption={removeOption}
             />
           )
         )}

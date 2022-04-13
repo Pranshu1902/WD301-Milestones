@@ -14,6 +14,7 @@ export default function OptionsInput(props: {
   updateFieldType: (e: any, id: number) => void;
   addNewOption: (id: number) => void;
   removeField: (id: number) => void;
+  removeOption: (id: number, option: string) => void;
 }) {
   return (
     <div key={props.id}>
@@ -65,22 +66,26 @@ export default function OptionsInput(props: {
               Add Option
             </button>
           </div>
-          <select
-            name="options"
+          <ul
+            //name="options"
             id="options"
             className="p-2 my-2 border-2 rounded-lg"
             onChange={(e) => {
               props.updateFieldType(e, props.id);
             }}
-            value={props.type}
+            //value={props.type}
           >
-            <option value="">Select an option</option>
             {props.options.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
+              <li className="flex">
+                <button onClick={(_) => props.removeOption(props.id, option)}>
+                  ⛔
+                </button>
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              </li>
             ))}
-          </select>
+          </ul>
         </div>
 
         <button

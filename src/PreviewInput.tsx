@@ -20,7 +20,6 @@ export default function PreviewInput(props: {
           ></textarea>
         ) : props.fieldType === "dropdown" ? (
           <select className="rounded-lg px-12 py-2 border-2">
-            <option value="">Select an option</option>
             {props.options.map((option) => (
               <option key={option} value={option}>
                 {option}

@@ -89,7 +89,21 @@ export default function Preview(props: { id: number }) {
       </div>
       <p className="text-3xl flex text-blue-500">{state.title}</p>
       <div>
-        {state.fields.length === 0 ? (
+        {state.fields.length === 0 ||
+        (state.fields.filter(
+          (field) =>
+            field.type === "radio" ||
+            field.type === "dropdown" ||
+            field.type === "multidropdown"
+        ).length !== 0 &&
+          state.fields
+            .filter(
+              (field) =>
+                field.type === "radio" ||
+                field.type === "dropdown" ||
+                field.type === "multidropdown"
+            )
+            .filter((field) => field.options.length === 0).length !== 0) ? (
           <div className="justify-center p-6">
             <p className="flex text-red-500 text-xl">Form not completed yet</p>
             <br />

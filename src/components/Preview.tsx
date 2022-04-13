@@ -5,7 +5,6 @@ import { getLocalForms, saveLocalForms, savePreviewData } from "../Data";
 import { Link, navigate } from "raviger";
 import leftArrow from "../images/left.png";
 import rightArrow from "../images/right.png";
-import { stat } from "fs/promises";
 
 export interface formTemplate {
   id: number;
@@ -92,12 +91,17 @@ export default function Preview(props: { id: number }) {
       <div>
         {state.fields.length === 0 ||
         (state.fields.filter(
-          (field) => field.type === ("radio" || "dropdown" || "mutlidropdown")
+          (field) =>
+            field.type === "radio" ||
+            field.type === "dropdown" ||
+            field.type === "multidropdown"
         ).length !== 0 &&
           state.fields
             .filter(
               (field) =>
-                field.type === ("radio" || "dropdown" || "mutlidropdown")
+                field.type === "radio" ||
+                field.type === "dropdown" ||
+                field.type === "multidropdown"
             )
             .filter((field) => field.options.length === 0).length !== 0) ? (
           <div className="justify-center p-6">

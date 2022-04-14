@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useReducer } from "react";
 import LabelledInput from "../LabelledInput";
 import closeIcon from "../images/close.png";
 import FormTitle from "../FormTitle";
@@ -7,6 +7,7 @@ import { Link, navigate } from "raviger";
 import previewIcon from "../images/eye.png";
 import { formType } from "../types/formType";
 import OptionsInput from "../OptionsInput";
+import { form } from "../components/Home";
 
 export interface formTemplate {
   id: number;
@@ -18,16 +19,147 @@ export interface formTemplate {
 
 const formTemplate = { id: 1, type: "text", label: "", value: "", options: [] };
 
+const formTemplateAction = {
+  id: 1,
+  type: "text",
+  label: "",
+  value: "",
+  options: [],
+};
+
 export default function Form(props: { id: number }) {
   const [state, setState] = useState(
     getLocalForms().filter((form) => form.id === props.id).length !== 0
       ? getLocalForms().filter((form) => form.id === props.id)[0]
       : { id: Number(new Date()), title: "Untitled Form", fields: [] }
   );
-  const [newField, setNewField] = useState({
+  /*const [newField, setNewField] = useState({
+    label: "",
+    type: "",
+  });*/
+
+  //
+  // use reducer for newfield
+  type addFieldAction = {
+    type: "add_field";
+    label: string;
+    labelType: string;
+    resetValues: () => void;
+  };
+  type removeFieldAction = { id: number; type: "remove_field" };
+  type updateFieldAction = {
+    type: "update_field";
+    label: string;
+    labelType: string;
+  };
+  type resetFieldAction = { type: "reset_values" };
+
+  type newFieldType = {
+    label: string;
+    type: string;
+    id: number;
+    labelType: string;
+  };
+
+  type newFieldAction =
+    | addFieldAction
+    | removeFieldAction
+    | updateFieldAction
+    | resetFieldAction;
+
+  // newField use reducer state types
+  type newFieldAddState = { label: string; type: string; labelType: string };
+  type newFieldUpdateState = {
+    id: number;
+    type: string;
+  };
+  type newFieldRemoveState = {
+    id: number;
+    label: string;
+    type: string;
+    fieldType: string;
+  };
+
+  type newFieldStateTry =
+    | newFieldAddState
+    | newFieldRemoveState
+    | newFieldUpdateState;
+  type newFieldState = { label: string; type: string };
+
+  // new field reducer function
+  const newFieldReducer = (state: newFieldState, action: newFieldAction) => {
+    switch (action.type) {
+      case "add_field": {
+        if (action.label != "") {
+          let form = getLocalForms().filter((form) => form.id === props.id)[0];
+          let newFields = [
+            ...form.fields,
+            {
+              ...formTemplate,
+              type: action.labelType ? action.type : "text",
+              id: Number(new Date()),
+              label: action.label,
+              value: "",
+              options: [],
+            },
+          ];
+
+          let newState = {
+            ...form,
+            fields: newFields,
+          };
+          setState(newState);
+          //setNewField({ label: "", type: "" });
+          // updateForms(newState);
+
+          let output = {
+            ...state,
+            label: action.label,
+            type: action.labelType,
+          };
+
+          action.resetValues();
+
+          return output;
+        } else {
+          return state;
+        }
+      }
+      case "remove_field": {
+        return state;
+      }
+      case "update_field": {
+        return { ...state, label: action.label, type: action.labelType };
+      }
+      case "reset_values": {
+        let form = getLocalForms().filter((form) => form.id === props.id)[0];
+        let newFields = [
+          ...form.fields,
+          {
+            ...formTemplate,
+            type: "Select an option",
+            id: Number(new Date()),
+            label: "",
+            value: "",
+            options: [],
+          },
+        ];
+
+        let newState = {
+          ...form,
+          fields: newFields,
+        };
+        setState(newState);
+        return { ...state, label: "", type: "" };
+      }
+    }
+  };
+
+  const [newField, newFieldDispachter] = useReducer(newFieldReducer, {
     label: "",
     type: "",
   });
+  // new field reducer end
 
   useEffect(() => {
     state.id !== props.id && navigate(`/forms/${state.id}`);
@@ -55,6 +187,7 @@ export default function Form(props: { id: number }) {
 
   const [option, setOption] = useState("");
 
+  /*
   const addField = () => {
     if (newField.label != "") {
       let newFields = [
@@ -82,7 +215,7 @@ export default function Form(props: { id: number }) {
 
       console.log(getLocalForms());
     }
-  };
+  };*/
 
   const removeField = (id: number) => {
     let newFields = state.fields.filter((field) => field.id !== id);
@@ -347,7 +480,12 @@ export default function Form(props: { id: number }) {
               className="border-2 border-gray-200 rounded-lg p-2 my-4 flex-1"
               value={newField.label}
               onChange={(e) => {
-                setNewField({ label: e.target.value, type: newField.type });
+                newFieldDispachter({
+                  type: "update_field",
+                  label: e.target.value,
+                  labelType: newField.type,
+                });
+                // setNewField({ label: e.target.value, type: newField.type });
               }}
             />
           </div>
@@ -359,12 +497,13 @@ export default function Form(props: { id: number }) {
               name="type"
               id="field"
               className="py-2 border-2 rounded-lg"
-              onChange={(e) =>
-                setNewField({
+              onChange={(e) => {
+                newFieldDispachter({
                   ...newField,
-                  type: e.target.value,
-                })
-              }
+                  type: "update_field",
+                  labelType: e.target.value,
+                });
+              }}
             >
               <option value="">Select an option</option>
               <option value="text">Text</option>
@@ -381,7 +520,16 @@ export default function Form(props: { id: number }) {
         <div className="flex items-bottom">
           <button
             className="px-6 m-4 py-1 shadow-lg font-bold text-white bg-blue-500 hover:bg-blue-800 rounded-lg"
-            onClick={addField}
+            onClick={(e) => {
+              newFieldDispachter({
+                type: "add_field",
+                label: newField.label,
+                labelType: newField.type,
+                resetValues: () => {
+                  newFieldDispachter({ type: "reset_values" });
+                },
+              });
+            }}
           >
             Add Field
           </button>

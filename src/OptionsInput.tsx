@@ -76,13 +76,11 @@ export default function OptionsInput(props: {
             //value={props.type}
           >
             {props.options.map((option) => (
-              <li className="flex">
+              <li className="flex" key={option}>
                 <button onClick={(_) => props.removeOption(props.id, option)}>
                   ⛔
                 </button>
-                <option key={option} value={option}>
-                  {option}
-                </option>
+                <option value={option}>{option}</option>
               </li>
             ))}
           </ul>

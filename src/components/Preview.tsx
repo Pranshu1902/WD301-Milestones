@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useReducer } from "react";
+import React, { useEffect, useReducer } from "react";
 import PreviewInput from "../PreviewInput";
 import closeIcon from "../images/close.png";
 import { getLocalForms, saveLocalForms, savePreviewData } from "../Data";
 import { Link, navigate } from "raviger";
 import leftArrow from "../images/left.png";
 import rightArrow from "../images/right.png";
+import { formType } from "../types/formType";
 
 export interface formTemplate {
   id: number;
@@ -23,11 +24,30 @@ export interface form {
 // const formTemplate = { type: "text", label: "", value: "" };
 
 export default function Preview(props: { id: number }) {
-  const [state, setState] = useState(
+  type updateFormStateAction = { type: "update"; newState: formType };
+
+  let emptyFields: formTemplate[] = [];
+
+  let newFormState: formType = {
+    id: Number(new Date()),
+    title: "Untitled Form",
+    fields: emptyFields,
+  };
+
+  const initialState: formType =
     getLocalForms().filter((form) => form.id === props.id).length !== 0
       ? getLocalForms().filter((form) => form.id === props.id)[0]
-      : { id: Number(new Date()), title: "Untitled Form", fields: [] }
-  );
+      : newFormState;
+
+  const formStateReducer = (state: formType, action: updateFormStateAction) => {
+    switch (action.type) {
+      case "update": {
+        return action.newState;
+      }
+    }
+  };
+
+  const [state, stateDispatcher] = useReducer(formStateReducer, initialState);
 
   // useReducer for fieldId
   type nextFieldAction = { type: "next"; value: number };
@@ -39,19 +59,18 @@ export default function Preview(props: { id: number }) {
     switch (action.type) {
       case "next": {
         let form = getLocalForms().filter((form) => form.id === props.id)[0];
-        let index = form.fields.findIndex((field) => field.id === fieldId);
-        let newId = form.fields[index + 1].id;
-        if (index > 0) {
-          return newId;
+        let index = form.fields.findIndex((field) => field.id === action.value);
+        if (index < form.fields.length - 1) {
+          return form.fields[index + 1].id;
         }
         return state;
       }
       case "prev": {
         let form = getLocalForms().filter((form) => form.id === props.id)[0];
-        let index = form.fields.findIndex((field) => field.id === fieldId);
-        let newId = form.fields[index - 1].id;
+        let index = form.fields.findIndex((field) => field.id === action.value);
+
         if (index > 0) {
-          return newId;
+          return form.fields[index - 1].id;
         }
         return state;
       }
@@ -85,7 +104,8 @@ export default function Preview(props: { id: number }) {
       fields: newFields,
     };
 
-    setState(newState);
+    // setState(newState);
+    stateDispatcher({ type: "update", newState });
     let updatedPreviewData = getLocalForms();
     savePreviewData([...updatedPreviewData, newState]);
   };

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useReducer } from "react";
 import { Link, useQueryParams } from "raviger";
 import open from "../images/open.png";
 import deleteIcon from "../images/delete.png";
@@ -21,26 +21,45 @@ export interface form {
 
 export default function Home() {
   const [{ search }, setQuery] = useQueryParams();
-  const [searchString, setSearchString] = useState("");
 
-  const [state, setState] = useState(() => getLocalForms());
+  // formState useReducer
+  type searchFormStateAction = { type: "filter"; value: string };
+  type updateFormStateAction = { type: "update"; newState: formType[] };
+
+  const initialState: formType[] = getLocalForms();
+
+  const formStateReducer = (
+    state: formType[],
+    action: updateFormStateAction | searchFormStateAction
+  ) => {
+    switch (action.type) {
+      case "filter": {
+        return state.filter((form) => form.title.includes(action.value));
+      }
+      case "update": {
+        return action.newState;
+      }
+    }
+  };
+
+  const [state, stateDispatcher] = useReducer(formStateReducer, initialState);
+
+  type searchAction = { type: "update"; value: string };
+
+  const searchReducer = (state: string, action: searchAction) => {
+    switch (action.type) {
+      case "update": {
+        stateDispatcher({ type: "filter", value: action.value });
+        return action.value;
+      }
+    }
+  };
+  const [searchString, searchStringDispatcher] = useReducer(searchReducer, "");
 
   const deleteForm = (id: number) => {
     saveLocalForms(getLocalForms().filter((form) => form.id !== id));
-    setState(getLocalForms());
-  };
 
-  const generateNewForm = () => {
-    const newform: formType = {
-      id: Number(new Date()),
-      title: "New Form",
-      fields: [],
-    };
-
-    console.log("New form generated with id: ", newform.id);
-
-    saveLocalForms([...state, newform]);
-    setState([...state, newform]);
+    stateDispatcher({ type: "update", newState: getLocalForms() });
   };
 
   return (
@@ -57,7 +76,9 @@ export default function Home() {
           name="search"
           className="border-2 border-gray-200 rounded-lg p-2 my-2 w-full flex-1"
           value={searchString}
-          onChange={(e) => setSearchString(e.target.value)}
+          onChange={(e) =>
+            searchStringDispatcher({ type: "update", value: e.target.value })
+          }
         />
       </form>
       {state

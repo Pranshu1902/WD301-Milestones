@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useReducer } from "react";
+import React, { useEffect, useReducer } from "react";
 import LabelledInput from "../LabelledInput";
 import closeIcon from "../images/close.png";
 import FormTitle from "../FormTitle";
@@ -7,7 +7,6 @@ import { Link, navigate } from "raviger";
 import previewIcon from "../images/eye.png";
 import { formType } from "../types/formType";
 import OptionsInput from "../OptionsInput";
-import { form } from "../components/Home";
 
 export interface formTemplate {
   id: number;
@@ -29,32 +28,36 @@ const formTemplateAction = {
 
 export default function Form(props: { id: number }) {
   // formState useReducer
-  /*type 
+  type updateFormStateAction = { type: "update"; newState: formType };
 
-  const initialState = {
+  let emptyFields: formTemplate[] = [];
+
+  let newFormState: formType = {
     id: Number(new Date()),
     title: "Untitled Form",
-    fields: [],
+    fields: emptyFields,
   };
 
-  const formStateReducer = (state: formType, action: formTemplate) => {
+  const initialState: formType =
+    getLocalForms().filter((form) => form.id === props.id).length !== 0
+      ? getLocalForms().filter((form) => form.id === props.id)[0]
+      : newFormState;
+
+  const formStateReducer = (state: formType, action: updateFormStateAction) => {
     switch (action.type) {
-      case "ADD_FIELD": {
-        return initialState;
+      case "update": {
+        return action.newState;
       }
     }
   };
 
-  const [formState, formStateDispatcher] = useReducer(
-    formStateReducer,
-    initialState
-  );*/
+  const [state, stateDispatcher] = useReducer(formStateReducer, initialState);
 
-  const [state, setState] = useState(
+  /*const [state, setState] = useState(
     getLocalForms().filter((form) => form.id === props.id).length !== 0
       ? getLocalForms().filter((form) => form.id === props.id)[0]
       : { id: Number(new Date()), title: "Untitled Form", fields: [] }
-  );
+  );*/
 
   // save to localstorage
   const updateForms = (newForm: formType) => {
@@ -108,18 +111,19 @@ export default function Form(props: { id: number }) {
     fieldType: string;
   };
 
-  type newFieldStateTry =
+  /*type newFieldStateTry =
     | newFieldAddState
     | newFieldRemoveState
-    | newFieldUpdateState;
+    | newFieldUpdateState;*/
   type newFieldState = { label: string; type: string };
 
   // new field reducer function
-  const newFieldReducer = (state: newFieldState, action: newFieldAction) => {
+  const newFieldReducer = (states: newFieldState, action: newFieldAction) => {
     switch (action.type) {
       case "add_field": {
         if (action.label != "") {
-          let form = getLocalForms().filter((form) => form.id === props.id)[0];
+          let form = state;
+
           let newFields = [
             ...form.fields,
             {
@@ -136,11 +140,12 @@ export default function Form(props: { id: number }) {
             ...form,
             fields: newFields,
           };
-          setState(newState);
+          stateDispatcher({ type: "update", newState: newState });
+          // setState(newState);
           updateForms(newState);
 
           let output = {
-            ...state,
+            ...states,
             label: action.label,
             type: action.labelType,
           };
@@ -149,7 +154,7 @@ export default function Form(props: { id: number }) {
 
           return output;
         } else {
-          return state;
+          return states;
         }
       }
       case "remove_field": {
@@ -160,17 +165,18 @@ export default function Form(props: { id: number }) {
           ...form,
           fields: newFields,
         };
-        setState(newState);
+        stateDispatcher({ type: "update", newState: newState });
+        // setState(newState);
 
         updateForms(newState);
-        return state;
+        return states;
       }
       case "update_field": {
-        return { ...state, label: action.label, type: action.labelType };
+        return { ...states, label: action.label, type: action.labelType };
       }
 
       case "reset_values": {
-        return { ...state, label: "", type: "" };
+        return { ...states, label: "", type: "" };
       }
     }
   };
@@ -224,7 +230,8 @@ export default function Form(props: { id: number }) {
             fields: newFields,
           };
 
-          setState(newState);
+          stateDispatcher({ type: "update", newState: newState });
+          // setState(newState);
           // setOption("");
 
           // updating the form
@@ -249,7 +256,8 @@ export default function Form(props: { id: number }) {
           ...form,
           fields: newFields,
         };
-        setState(newState);
+        stateDispatcher({ type: "update", newState: newState });
+        // setState(newState);
         updateForms(newState);
 
         return action.value;
@@ -276,7 +284,8 @@ export default function Form(props: { id: number }) {
       fields: newFields,
     };
 
-    setState(newState);
+    stateDispatcher({ type: "update", newState: newState });
+    // setState(newState);
 
     updateForms(newState);
   };
@@ -298,7 +307,8 @@ export default function Form(props: { id: number }) {
       fields: newFields,
     };
 
-    setState(newState);
+    stateDispatcher({ type: "update", newState: newState });
+    // setState(newState);
 
     updateForms(newState);
   };
@@ -316,7 +326,8 @@ export default function Form(props: { id: number }) {
       fields: updatedFields,
     };
 
-    setState(newState);
+    stateDispatcher({ type: "update", newState: newState });
+    // setState(newState);
 
     updateForms(newState);
   };
@@ -324,10 +335,11 @@ export default function Form(props: { id: number }) {
   const updateTitle = (value: string) => {
     let allForms = getLocalForms();
 
-    setState((form) => ({
+    stateDispatcher({ type: "update", newState: { ...state, title: value } });
+    /*setState((form) => ({
       ...form,
       title: value,
-    }));
+    }));*/
 
     allForms.map((form) => {
       form.id === props.id ? (form.title = value) : (form.title = form.title);
@@ -355,7 +367,8 @@ export default function Form(props: { id: number }) {
       fields: newFields,
     };
 
-    setState(newState);
+    stateDispatcher({ type: "update", newState: newState });
+    // setState(newState);
     updateForms(newState);
   };
 

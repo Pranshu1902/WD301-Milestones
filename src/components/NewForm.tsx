@@ -38,6 +38,23 @@ export default function Form(props: { id: number }) {
     type: "",
   });*/
 
+  // save to localstorage
+  const updateForms = (newForm: formType) => {
+    let newForms = getLocalForms();
+
+    {
+      getLocalForms().filter((form) => form.id === state.id).length !== 0
+        ? saveLocalForms([...getLocalForms(), state])
+        : console.log("Form saved");
+    }
+
+    newForms.map((form) => {
+      form.id === props.id ? (form.fields = newForm.fields) : (form = form);
+    });
+
+    saveLocalForms(newForms);
+  };
+
   //
   // use reducer for newfield
   type addFieldAction = {
@@ -95,7 +112,7 @@ export default function Form(props: { id: number }) {
           let newFields = [
             ...form.fields,
             {
-              ...formTemplate,
+              //...formTemplate,
               type: action.labelType ? action.labelType : "text",
               id: Number(new Date()),
               label: action.label,
@@ -109,8 +126,7 @@ export default function Form(props: { id: number }) {
             fields: newFields,
           };
           setState(newState);
-          //setNewField({ label: "", type: "" });
-          // updateForms(newState);
+          updateForms(newState);
 
           let output = {
             ...state,
@@ -120,19 +136,48 @@ export default function Form(props: { id: number }) {
 
           action.resetValues();
 
-          console.log(output);
-
           return output;
         } else {
           return state;
         }
       }
       case "remove_field": {
+        let form = getLocalForms().filter((form) => form.id === props.id)[0];
+        let newFields = form.fields.filter((field) => field.id !== action.id);
+
+        let newState = {
+          ...form,
+          fields: newFields,
+        };
+        setState(newState);
+
+        // updateForms(newState);
         return state;
       }
       case "update_field": {
+        /*let form = getLocalForms().filter((form) => form.id === props.id)[0];
+        let newFields = form.fields.map((field) => {
+          if (field.id === action.id) {
+            return {
+              ...field,
+              label: action.label,
+            };
+          } else {
+            return field;
+          }
+        });
+
+        let newState = {
+          ...form,
+          fields: newFields,
+        };
+
+        setState(newState);*/
+
+        // updateForms(newState);
         return { ...state, label: action.label, type: action.labelType };
       }
+
       case "reset_values": {
         /*let form = getLocalForms().filter((form) => form.id === props.id)[0];
         let newFields = [
@@ -172,22 +217,6 @@ export default function Form(props: { id: number }) {
     getLocalForms().length === 0 ? saveLocalForms([state]) : console.log("");
   });
 
-  const updateForms = (newForm: formType) => {
-    let newForms = getLocalForms();
-
-    {
-      getLocalForms().filter((form) => form.id === state.id).length !== 0
-        ? saveLocalForms([...getLocalForms(), state])
-        : console.log("Form saved");
-    }
-
-    newForms.map((form) => {
-      form.id === props.id ? (form.fields = newForm.fields) : (form = form);
-    });
-
-    saveLocalForms(newForms);
-  };
-
   const [option, setOption] = useState("");
 
   /*
@@ -220,7 +249,7 @@ export default function Form(props: { id: number }) {
     }
   };*/
 
-  const removeField = (id: number) => {
+  /*const removeField = (id: number) => {
     let newFields = state.fields.filter((field) => field.id !== id);
 
     let newState = {
@@ -230,7 +259,7 @@ export default function Form(props: { id: number }) {
     setState(newState);
 
     updateForms(newState);
-  };
+  };*/
 
   const updateField = (e: any, id: number) => {
     let newFields = state.fields.map((field) => {
@@ -444,7 +473,12 @@ export default function Form(props: { id: number }) {
               label={field.label}
               key={field.id}
               fieldType={field.type}
-              removeFieldCB={removeField}
+              removeFieldCB={() =>
+                newFieldDispachter({
+                  type: "remove_field",
+                  id: field.id,
+                })
+              }
               value={field.value}
               optionValue={option}
               onChangeCB={(e) => {
@@ -462,11 +496,13 @@ export default function Form(props: { id: number }) {
               type={field.type}
               options={field.options}
               option={option}
-              updateField={updateField}
+              updateField={(e) => updateField(e, field.id)}
               updateOptions={updateOptions}
               updateFieldType={updateFieldType}
               addNewOption={addOption}
-              removeField={removeField}
+              removeField={() => {
+                newFieldDispachter({ type: "remove_field", id: field.id });
+              }}
               removeOption={removeOption}
             />
           )

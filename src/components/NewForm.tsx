@@ -51,12 +51,6 @@ export default function Form(props: { id: number }) {
     initialState
   );
 
-  /*const [state, setState] = useState(
-    getLocalForms().filter((form) => form.id === props.id).length !== 0
-      ? getLocalForms().filter((form) => form.id === props.id)[0]
-      : { id: Number(new Date()), title: "Untitled Form", fields: [] }
-  );*/
-
   // save to localstorage
   const updateForms = (newForm: formType) => {
     let newForms = getLocalForms();

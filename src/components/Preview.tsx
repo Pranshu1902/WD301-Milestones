@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useReducer } from "react";
 import PreviewInput from "../PreviewInput";
 import closeIcon from "../images/close.png";
 import { getLocalForms, saveLocalForms, savePreviewData } from "../Data";
@@ -29,23 +29,39 @@ export default function Preview(props: { id: number }) {
       : { id: Number(new Date()), title: "Untitled Form", fields: [] }
   );
 
-  const [fieldId, setFieldId] = useState(
+  // useReducer for fieldId
+  type nextFieldAction = { type: "next"; value: number };
+  type prevFieldAction = { type: "prev"; value: number };
+
+  type fieldIdAction = nextFieldAction | prevFieldAction;
+
+  const fieldIdReducer = (state: number, action: fieldIdAction) => {
+    switch (action.type) {
+      case "next": {
+        let form = getLocalForms().filter((form) => form.id === props.id)[0];
+        let index = form.fields.findIndex((field) => field.id === fieldId);
+        let newId = form.fields[index + 1].id;
+        if (index > 0) {
+          return newId;
+        }
+        return state;
+      }
+      case "prev": {
+        let form = getLocalForms().filter((form) => form.id === props.id)[0];
+        let index = form.fields.findIndex((field) => field.id === fieldId);
+        let newId = form.fields[index - 1].id;
+        if (index > 0) {
+          return newId;
+        }
+        return state;
+      }
+    }
+  };
+
+  const [fieldId, fieldIdDispatcher] = useReducer(
+    fieldIdReducer,
     state.fields.length ? state.fields[0].id : 0
   );
-
-  const nextField = () => {
-    let index = state.fields.findIndex((field) => field.id === fieldId);
-    if (index < state.fields.length - 1) {
-      setFieldId(state.fields[index + 1].id);
-    }
-  };
-
-  const prevField = () => {
-    let index = state.fields.findIndex((field) => field.id === fieldId);
-    if (index > 0) {
-      setFieldId(state.fields[index - 1].id);
-    }
-  };
 
   useEffect(() => {
     state.id !== props.id && navigate(`/forms/${state.id}`);
@@ -132,7 +148,14 @@ export default function Preview(props: { id: number }) {
                       options={field.options ? field.options : []}
                     />
                     <div className="flex gap-6 justify-center">
-                      <button onClick={prevField}>
+                      <button
+                        onClick={() =>
+                          fieldIdDispatcher({
+                            type: "prev",
+                            value: fieldId,
+                          })
+                        }
+                      >
                         <img
                           className="hover:scale-125"
                           width={30}
@@ -141,7 +164,14 @@ export default function Preview(props: { id: number }) {
                           alt="left"
                         />
                       </button>
-                      <button onClick={nextField}>
+                      <button
+                        onClick={() =>
+                          fieldIdDispatcher({
+                            type: "next",
+                            value: fieldId,
+                          })
+                        }
+                      >
                         <img
                           className="hover:scale-125"
                           width={30}

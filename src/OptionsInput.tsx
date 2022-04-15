@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 
 export default function OptionsInput(props: {
   id: number;
@@ -12,7 +12,7 @@ export default function OptionsInput(props: {
   updateField: (e: any, id: number) => void;
   updateOptions: (e: string) => void;
   updateFieldType: (e: any, id: number) => void;
-  addNewOption: (id: number) => void;
+  addNewOption: () => void;
   removeField: (id: number) => void;
   removeOption: (id: number, option: string) => void;
 }) {
@@ -61,7 +61,7 @@ export default function OptionsInput(props: {
             &nbsp;
             <button
               className="mt-2 ml-6 px-12 py-1 shadow-lg bg-red-500 hover:bg-red-700 rounded-lg font-bold text-white"
-              onClick={() => props.addNewOption(props.id)}
+              onClick={() => props.addNewOption()}
             >
               Add Option
             </button>

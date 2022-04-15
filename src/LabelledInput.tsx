@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { getLocalForms, saveLocalForms } from "./Data";
 
 export default function LabelledInput(props: {

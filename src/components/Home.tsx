@@ -87,7 +87,13 @@ export default function Home() {
         )
         .map((form) => (
           <div key={form.id} className="shadow-lg rounded-lg p-2 border-1">
-            <div className="float-left pt-1 pr-4">{form.title}</div>
+            <div className="float-left pt-1 pr-4">
+              {form.title} <br />{" "}
+              <p className="text-gray-500 font-thin">
+                {form.fields.length}{" "}
+                {form.fields.length === 1 ? "question" : "questions"}
+              </p>
+            </div>
             <button
               className="ml-2 bg-red-500 text-white font-bold rounded-lg px-4 py-2 hover:bg-red-700 float-right"
               onClick={() => deleteForm(form.id)}

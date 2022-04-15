@@ -10,7 +10,7 @@ export default function OptionsInput(props: {
   option: string;
   // onChangeCB: (e: any) => void;
   updateField: (e: any, id: number) => void;
-  updateOptions: (e: any, id: number) => void;
+  updateOptions: (e: string) => void;
   updateFieldType: (e: any, id: number) => void;
   addNewOption: (id: number) => void;
   removeField: (id: number) => void;
@@ -55,7 +55,7 @@ export default function OptionsInput(props: {
               value={props.option}
               id={props.id.toString()}
               onChange={(e) => {
-                props.updateOptions(e.target.value, props.id);
+                props.updateOptions(e.target.value);
               }}
             />
             &nbsp;

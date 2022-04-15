@@ -33,10 +33,6 @@ export default function Form(props: { id: number }) {
       ? getLocalForms().filter((form) => form.id === props.id)[0]
       : { id: Number(new Date()), title: "Untitled Form", fields: [] }
   );
-  /*const [newField, setNewField] = useState({
-    label: "",
-    type: "",
-  });*/
 
   // save to localstorage
   const updateForms = (newForm: formType) => {
@@ -70,13 +66,6 @@ export default function Form(props: { id: number }) {
     labelType: string;
   };
   type resetFieldAction = { type: "reset_values" };
-
-  type newFieldType = {
-    label: string;
-    type: string;
-    id: number;
-    labelType: string;
-  };
 
   type newFieldAction =
     | addFieldAction
@@ -178,7 +167,79 @@ export default function Form(props: { id: number }) {
     getLocalForms().length === 0 ? saveLocalForms([state]) : console.log("");
   });
 
-  const [option, setOption] = useState("");
+  // useReducer for option
+  type addOptionAction = { id: number; value: string; type: "add_option" };
+  type removeOptionAction = { id: number; type: "remove_option" };
+  type updateOptionAction = {
+    type: "update_option";
+    value: string;
+    id: number;
+  };
+
+  type optionAction = addOptionAction | removeOptionAction | updateOptionAction;
+  // const [option, setOption] = useState("");
+  const optionReducer = (state: string, action: optionAction) => {
+    switch (action.type) {
+      case "add_option": {
+        let form = getLocalForms().filter((form) => form.id === props.id)[0];
+        if (
+          action.value !== "" &&
+          form.fields
+            .filter((field) => field.id === action.id)[0]
+            .options.includes(action.value) === false
+        ) {
+          let newFields = form.fields.map((field) => {
+            if (field.id === action.id) {
+              return {
+                ...field,
+                options: [...field.options, action.value],
+              };
+            } else {
+              return field;
+            }
+          });
+
+          let newState = {
+            ...form,
+            fields: newFields,
+          };
+
+          setState(newState);
+          // setOption("");
+
+          // updating the form
+          updateForms(newState);
+        }
+        return "";
+      }
+      case "remove_option": {
+        return "";
+      }
+      case "update_option": {
+        let form = getLocalForms().filter((form) => form.id === props.id)[0];
+        let newFields = form.fields.map((field) => {
+          if (field.id === action.id) {
+            return {
+              ...field,
+              input: [...field.options, action.value],
+            };
+          } else {
+            return field;
+          }
+        });
+
+        let newState = {
+          ...form,
+          fields: newFields,
+        };
+        setState(newState);
+        updateForms(newState);
+
+        return action.value;
+      }
+    }
+  };
+  const [option, optionDispatcher] = useReducer(optionReducer, "");
 
   const updateField = (e: any, id: number) => {
     let newFields = state.fields.map((field) => {
@@ -259,7 +320,7 @@ export default function Form(props: { id: number }) {
   };
 
   // handling new field types
-  const addOption = (id: number) => {
+  /*const addOption = (id: number) => {
     if (
       option !== "" &&
       state.fields
@@ -283,12 +344,12 @@ export default function Form(props: { id: number }) {
       };
 
       setState(newState);
-      setOption("");
+      // setOption("");
 
       // updating the form
       updateForms(newState);
     }
-  };
+  };*/
 
   // updating the options input
   const updateOptions = (e: string, id: number) => {
@@ -307,7 +368,7 @@ export default function Form(props: { id: number }) {
       ...state,
       fields: newFields,
     };
-    setOption(e);
+    // setOption(e);
     setState(newState);
     updateForms(newState);
   };
@@ -416,9 +477,21 @@ export default function Form(props: { id: number }) {
               options={field.options}
               option={option}
               updateField={(e) => updateField(e, field.id)}
-              updateOptions={updateOptions}
+              updateOptions={(e) =>
+                optionDispatcher({
+                  type: "update_option",
+                  value: e,
+                  id: field.id,
+                })
+              }
               updateFieldType={updateFieldType}
-              addNewOption={addOption}
+              addNewOption={() =>
+                optionDispatcher({
+                  type: "add_option",
+                  id: field.id,
+                  value: option,
+                })
+              }
               removeField={() => {
                 newFieldDispachter({ type: "remove_field", id: field.id });
               }}

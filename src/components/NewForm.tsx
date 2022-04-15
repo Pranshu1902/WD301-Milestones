@@ -96,7 +96,7 @@ export default function Form(props: { id: number }) {
             ...form.fields,
             {
               ...formTemplate,
-              type: action.labelType ? action.type : "text",
+              type: action.labelType ? action.labelType : "text",
               id: Number(new Date()),
               label: action.label,
               value: "",
@@ -120,6 +120,8 @@ export default function Form(props: { id: number }) {
 
           action.resetValues();
 
+          console.log(output);
+
           return output;
         } else {
           return state;
@@ -132,7 +134,7 @@ export default function Form(props: { id: number }) {
         return { ...state, label: action.label, type: action.labelType };
       }
       case "reset_values": {
-        let form = getLocalForms().filter((form) => form.id === props.id)[0];
+        /*let form = getLocalForms().filter((form) => form.id === props.id)[0];
         let newFields = [
           ...form.fields,
           {
@@ -150,6 +152,7 @@ export default function Form(props: { id: number }) {
           fields: newFields,
         };
         setState(newState);
+        */
         return { ...state, label: "", type: "" };
       }
     }

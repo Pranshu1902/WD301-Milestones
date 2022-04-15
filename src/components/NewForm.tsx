@@ -151,53 +151,14 @@ export default function Form(props: { id: number }) {
         };
         setState(newState);
 
-        // updateForms(newState);
+        updateForms(newState);
         return state;
       }
       case "update_field": {
-        /*let form = getLocalForms().filter((form) => form.id === props.id)[0];
-        let newFields = form.fields.map((field) => {
-          if (field.id === action.id) {
-            return {
-              ...field,
-              label: action.label,
-            };
-          } else {
-            return field;
-          }
-        });
-
-        let newState = {
-          ...form,
-          fields: newFields,
-        };
-
-        setState(newState);*/
-
-        // updateForms(newState);
         return { ...state, label: action.label, type: action.labelType };
       }
 
       case "reset_values": {
-        /*let form = getLocalForms().filter((form) => form.id === props.id)[0];
-        let newFields = [
-          ...form.fields,
-          {
-            ...formTemplate,
-            type: "Select an option",
-            id: Number(new Date()),
-            label: "",
-            value: "",
-            options: [],
-          },
-        ];
-
-        let newState = {
-          ...form,
-          fields: newFields,
-        };
-        setState(newState);
-        */
         return { ...state, label: "", type: "" };
       }
     }
@@ -218,48 +179,6 @@ export default function Form(props: { id: number }) {
   });
 
   const [option, setOption] = useState("");
-
-  /*
-  const addField = () => {
-    if (newField.label != "") {
-      let newFields = [
-        ...state.fields,
-        {
-          ...formTemplate,
-          type: newField.type.length ? newField.type : "text",
-          id: Number(new Date()),
-          label: newField.label,
-          value: "",
-          options: [],
-        },
-      ];
-
-      let finalform = { ...state, fields: newFields };
-
-      let newState = {
-        ...state,
-        fields: newFields,
-      };
-      setState(newState);
-      setNewField({ label: "", type: "" });
-
-      updateForms(finalform);
-
-      console.log(getLocalForms());
-    }
-  };*/
-
-  /*const removeField = (id: number) => {
-    let newFields = state.fields.filter((field) => field.id !== id);
-
-    let newState = {
-      ...state,
-      fields: newFields,
-    };
-    setState(newState);
-
-    updateForms(newState);
-  };*/
 
   const updateField = (e: any, id: number) => {
     let newFields = state.fields.map((field) => {

@@ -1,10 +1,12 @@
-import React, { useReducer } from "react";
+import React, { useReducer, useEffect, useState } from "react";
 import { Link, useQueryParams } from "raviger";
 import open from "../images/open.png";
 import deleteIcon from "../images/delete.png";
 import previewIcon from "../images/eye.png";
 import { getLocalForms, saveLocalForms } from "../Data";
-import { formType } from "../types/formType";
+import { formType, formItem } from "../types/formType";
+import Modal from "./common/Modal";
+import CreateForm from "./CreateForm";
 
 export interface formTemplate {
   id: number;
@@ -19,8 +21,15 @@ export interface form {
   fields: formTemplate[];
 }
 
+const fetchForms = async (setFormCB: (value: formItem[]) => void) => {
+  const reponse = await fetch("https://tsapi.coronasafe.live/api/mock_test");
+  const jsonData = await reponse.json();
+  setFormCB(jsonData);
+};
+
 export default function Home() {
   const [{ search }, setQuery] = useQueryParams();
+  const [newForm, setNewForm] = useState(false);
 
   // formState useReducer
   type searchFormStateAction = { type: "filter"; value: string };
@@ -29,7 +38,7 @@ export default function Home() {
   const initialState: formType[] = getLocalForms();
 
   const formStateReducer = (
-    state: formType[],
+    state: formItem[],
     action: updateFormStateAction | searchFormStateAction
   ) => {
     switch (action.type) {
@@ -62,6 +71,12 @@ export default function Home() {
     stateDispatcher({ type: "update", newState: getLocalForms() });
   };
 
+  useEffect(() => {
+    fetchForms(() =>
+      stateDispatcher({ type: "update", newState: getLocalForms() })
+    );
+  }, []);
+
   return (
     <div className="flex flex-col justify-center gap-y-4">
       <form
@@ -90,8 +105,8 @@ export default function Home() {
             <div className="float-left pt-1 pr-4">
               {form.title} <br />{" "}
               <p className="text-gray-500 font-thin">
-                {form.fields.length}{" "}
-                {form.fields.length === 1 ? "question" : "questions"}
+                {/* {form.fields.length}{" "} */}
+                {/* {form.fields.length === 1 ? "question" : "questions"} */}
               </p>
             </div>
             <button
@@ -141,12 +156,17 @@ export default function Home() {
         </div>
       ) : null}{" "}
       &nbsp;
-      <Link
+      <button
         className="justify-center flex py-2 font-bold text-white bg-blue-500 hover:bg-blue-800 rounded-lg"
-        href={`/forms/0`}
+        onClick={(_) => {
+          setNewForm(true);
+        }}
       >
         New Form
-      </Link>
+      </button>
+      <Modal open={newForm} closeCB={() => setNewForm(false)}>
+        <CreateForm />
+      </Modal>
     </div>
   );
 }

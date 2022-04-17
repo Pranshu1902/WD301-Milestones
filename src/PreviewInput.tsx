@@ -6,7 +6,9 @@ export default function PreviewInput(props: {
   fieldType: string;
   value: string;
   options: string[];
-  onChangeCB: (e: any) => void;
+  onChangeCB: (
+    e: React.FormEvent<HTMLInputElement> | React.FormEvent<HTMLTextAreaElement>
+  ) => void;
 }) {
   return (
     <>

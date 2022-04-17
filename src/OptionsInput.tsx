@@ -8,10 +8,10 @@ export default function OptionsInput(props: {
   type: string;
   options: string[];
   option: string;
-  // onChangeCB: (e: any) => void;
-  updateField: (e: any, id: number) => void;
+  // onChangeCB: (e: ) => void;
+  updateField: (e: React.FormEvent<HTMLInputElement>, id: number) => void;
   updateOptions: (e: string) => void;
-  updateFieldType: (e: any, id: number) => void;
+  updateFieldType: (e: React.FormEvent<HTMLElement>, id: number) => void;
   addNewOption: () => void;
   removeField: (id: number) => void;
   removeOption: (id: number, option: string) => void;

@@ -9,8 +9,8 @@ export default function LabelledInput(props: {
   optionValue: string;
   options: string[];
   removeFieldCB: (id: number) => void;
-  onChangeCB: (e: any) => void;
-  onTypeChangeCB: (e: any) => void;
+  onChangeCB: (e: React.FormEvent<HTMLInputElement>) => void;
+  onTypeChangeCB: (e: React.ChangeEvent<HTMLSelectElement>) => void;
 }) {
   return (
     <>

@@ -291,12 +291,15 @@ export default function Form(props: { id: number }) {
     updateForms(newState);
   };
 
-  const updateFieldType = (e: React.FormEvent<HTMLElement>, id: number) => {
+  const updateFieldType = (
+    e: React.FormEvent<HTMLSelectElement>,
+    id: number
+  ) => {
     let newFields = formState.fields.map((field) => {
       if (field.id === id) {
         return {
           ...field,
-          type: e.target.value,
+          type: e.currentTarget.value,
         };
       } else {
         return field;

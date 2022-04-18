@@ -6,20 +6,23 @@ import Home from "../components/Home";
 import Form from "../components/NewForm";
 import Header from "../Header";
 import Preview from "../components/Preview";
+import Login from "../components/Login";
+import { User } from "../types/userTypes";
 
 const routes = {
   "/": () => <Home />,
+  "/login": () => <Login />,
   "/about": () => <About />,
   "/forms/:id": ({ id }: { id: string }) => <Form id={Number(id)} />,
   "/preview/:id": ({ id }: { id: string }) => <Preview id={Number(id)} />,
 };
 
-export default function AppRouter() {
+export default function AppRouter(props: { currentUser: User }) {
   let routeResult = useRoutes(routes);
   return (
-    <AppContainer>
+    <AppContainer currentUser={props.currentUser}>
       <div className="p-4 w-full justify-center bg-white shadow-lg rounded-xl items-center font-bold">
-        <Header title={"Welcome"} />
+        <Header currentUser={props.currentUser} title={"Welcome"} />
         {routeResult}
       </div>
     </AppContainer>

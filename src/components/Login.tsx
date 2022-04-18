@@ -1,10 +1,17 @@
 import { navigate } from "raviger";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { login } from "../utils/apiUtils";
 
 export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      navigate("/");
+    }
+  }, []);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -47,6 +54,7 @@ export default function Login() {
           <button
             className="w-full border-2 border-gray-200 rounded-lg p-2 my-2 flex-1"
             type="submit"
+            onClick={(e) => handleSubmit}
           >
             Login
           </button>

@@ -4,9 +4,11 @@ import open from "../images/open.png";
 import deleteIcon from "../images/delete.png";
 import previewIcon from "../images/eye.png";
 import { getLocalForms, saveLocalForms } from "../Data";
-import { formType, formItem } from "../types/formType";
+import { formType, formItem, Form } from "../types/formType";
 import Modal from "./common/Modal";
 import CreateForm from "./CreateForm";
+import { listForms } from "../utils/apiUtils";
+import { Pagination } from "../types/common";
 
 export interface formTemplate {
   id: number;
@@ -22,9 +24,12 @@ export interface form {
 }
 
 const fetchForms = async (setFormCB: (value: formItem[]) => void) => {
-  const reponse = await fetch("https://tsapi.coronasafe.live/api/mock_test");
-  const jsonData = await reponse.json();
-  setFormCB(jsonData);
+  try {
+    const data: Pagination<formItem> = await listForms({ offset: 0, limit: 2 });
+    setFormCB(data.results);
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 export default function Home() {

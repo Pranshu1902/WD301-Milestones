@@ -2,8 +2,9 @@ import { link } from "fs";
 import { ActiveLink } from "raviger";
 import React from "react";
 import logo from "./logo.svg";
+import { User } from "./types/userTypes";
 
-export default function Header(props: { title: string }) {
+export default function Header(props: { title: string; currentUser: User }) {
   return (
     <div className="flex gap-2 items-center justify-center">
       <img
@@ -19,16 +20,37 @@ export default function Header(props: { title: string }) {
         {[
           { page: "Home", url: "/" },
           { page: "About", url: "/about" },
-        ].map((link) => (
-          <ActiveLink
-            key={link.url}
-            href={link.url}
-            className="uppercase p-2 hover:text-blue-700"
-            exactActiveClass="text-blue-500"
-          >
-            {link.page}
-          </ActiveLink>
-        ))}
+          ...(props.currentUser
+            ? [
+                {
+                  page: "Logout",
+                  onclick: () => {
+                    localStorage.removeItem("token");
+                    window.location.reload();
+                  },
+                },
+              ]
+            : [{ page: "Login", url: "/login" }]),
+        ].map((link) =>
+          link.url ? (
+            <ActiveLink
+              key={link.page}
+              href={link.url}
+              className="uppercase p-2 hover:text-blue-700"
+              exactActiveClass="text-blue-500"
+            >
+              {link.page}
+            </ActiveLink>
+          ) : (
+            <button
+              key={link.page}
+              onClick={link.onclick}
+              className="uppercase p-2 hover:text-blue-700"
+            >
+              {link.page}
+            </button>
+          )
+        )}
       </div>
     </div>
   );

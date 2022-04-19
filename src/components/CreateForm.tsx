@@ -5,6 +5,7 @@ import { createForm } from "../utils/apiUtils";
 
 export default function CreateForm() {
   const [form, setForm] = useState<Form>({
+    id: 0,
     title: "",
     description: "",
     is_public: false,

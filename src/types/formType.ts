@@ -1,4 +1,5 @@
 import { formTemplate } from "../components/NewForm";
+import { APIFormFields } from "./fieldTypes";
 
 type normalForm = {
   id: number;
@@ -50,6 +51,14 @@ export type Form = {
   title: string;
   description?: string;
   is_public?: boolean;
+};
+
+export type APIForm = {
+  id?: number;
+  title: string;
+  description?: string;
+  is_public?: boolean;
+  fields: APIFormFields[];
 };
 
 export type Error<T> = Partial<Record<keyof T, string>>;

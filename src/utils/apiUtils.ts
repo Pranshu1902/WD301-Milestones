@@ -1,4 +1,5 @@
 import { PaginationParams } from "../types/common";
+import { APIFormFields } from "../types/fieldTypes";
 import { Form } from "../types/formType";
 
 const API_BASE_URL = "https://tsapi.coronasafe.live/api/";
@@ -51,7 +52,7 @@ export const request = async (
 };
 
 export const createForm = (form: Form) => {
-  return request("forms", "POST", form);
+  return request("forms/", "POST", form);
 };
 
 export const login = (username: string, password: string) => {
@@ -65,3 +66,85 @@ export const me = () => {
 export const listForms = (pageParams: PaginationParams) => {
   return request("forms/", "GET", pageParams);
 };
+
+export async function getFormData(formId: string) {
+  return request(`forms/${formId}/`);
+}
+
+export async function patchFormData(formId: string, form: Form) {
+  return request(`forms/${formId}/`, "PATCH", form);
+}
+
+export async function deleteForm(formId: string) {
+  return request(`forms/${formId}/`, "DELETE");
+}
+
+export async function getFormFields(formId: string) {
+  return request(`forms/${formId}/fields/`);
+}
+
+export async function addField(formId: string, field: APIFormFields) {
+  const newField = {
+    label: field.label,
+    kind: field.kind,
+    options: field.kind !== "text" ? field.options : null,
+    value: field.value,
+    meta: {
+      fieldType: field.fieldType,
+    },
+  };
+  return request(`forms/${formId}/fields/`, "POST", newField);
+}
+
+export async function updateField(
+  formId: string,
+  fieldId: string,
+  field: APIFormFields
+) {
+  const payload = {
+    label: field.label,
+    kind: field.kind,
+    options: field.kind !== "text" ? field.options : null,
+    value: field.value,
+    meta: {
+      fieldType: field.fieldType,
+    },
+  };
+  return request(`forms/${formId}/fields/${fieldId}/`, "PUT", payload);
+}
+
+export async function removeField(formId: string, fieldId: string) {
+  return request(`forms/${formId}/fields/${fieldId}/`, "DELETE");
+}
+
+export async function getOptions(formId: string, fieldId: string) {
+  return request(`forms/${formId}/fields/${fieldId}/options/`, "GET");
+}
+
+export async function addOption(formId: string, fieldId: string, option: any) {
+  return request(`forms/${formId}/fields/${fieldId}/options/`, "POST", option);
+}
+
+export async function updateOption(
+  formId: string,
+  fieldId: string,
+  optionId: string,
+  option: any
+) {
+  return request(
+    `forms/${formId}/fields/${fieldId}/options/${optionId}/`,
+    "PUT",
+    option
+  );
+}
+
+export async function removeOption(
+  formId: string,
+  fieldId: string,
+  optionId: string
+) {
+  return request(
+    `forms/${formId}/fields/${fieldId}/options/${optionId}/`,
+    "DELETE"
+  );
+}

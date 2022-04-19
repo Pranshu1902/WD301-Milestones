@@ -4,10 +4,10 @@ import open from "../images/open.png";
 import deleteIcon from "../images/delete.png";
 import previewIcon from "../images/eye.png";
 import { getLocalForms, saveLocalForms } from "../Data";
-import { formType, formItem, Form } from "../types/formType";
+import { formType, formItem, Form, APIForm } from "../types/formType";
 import Modal from "./common/Modal";
 import CreateForm from "./CreateForm";
-import { listForms } from "../utils/apiUtils";
+import { deleteForm, listForms } from "../utils/apiUtils";
 import { Pagination } from "../types/common";
 
 export interface formTemplate {
@@ -46,10 +46,13 @@ export default function Home() {
   type searchFormStateAction = { type: "filter"; value: string };
   type updateFormStateAction = { type: "update"; newState: formType[] };
 
-  const initialState: formType[] = getLocalForms();
+  const initialState: any = listForms({
+    offset: 0,
+    limit: 5,
+  });
 
   const formStateReducer = (
-    state: formItem[],
+    state: Form[],
     action: updateFormStateAction | searchFormStateAction
   ) => {
     switch (action.type) {
@@ -76,11 +79,11 @@ export default function Home() {
   };
   const [searchString, searchStringDispatcher] = useReducer(searchReducer, "");
 
-  const deleteForm = (id: number) => {
+  /*const deleteForm = (id: number) => {
     saveLocalForms(getLocalForms().filter((form) => form.id !== id));
 
     stateDispatcher({ type: "update", newState: getLocalForms() });
-  };
+  };*/
 
   useEffect(() => {
     fetchForms(() =>
@@ -122,7 +125,9 @@ export default function Home() {
             </div>
             <button
               className="ml-2 bg-red-500 text-white font-bold rounded-lg px-4 py-2 hover:bg-red-700 float-right"
-              onClick={() => deleteForm(form.id)}
+              onClick={() => {
+                deleteForm(form.id);
+              }} //deleteForm(form.id)}
             >
               Delete
               <img
@@ -167,14 +172,23 @@ export default function Home() {
         </div>
       ) : null}{" "}
       &nbsp;
-      <button
-        className="justify-center flex py-2 font-bold text-white bg-blue-500 hover:bg-blue-800 rounded-lg"
-        onClick={(_) => {
-          setNewForm(true);
-        }}
-      >
-        New Form
-      </button>
+      {localStorage.getItem("token") ? (
+        <button
+          className="justify-center flex py-2 font-bold text-white bg-blue-500 hover:bg-blue-800 rounded-lg"
+          onClick={(_) => {
+            setNewForm(true);
+          }}
+        >
+          New Form
+        </button>
+      ) : (
+        <Link
+          className="justify-center flex py-2 font-bold text-white bg-blue-500 hover:bg-blue-800 rounded-lg"
+          href="/login" // redirect to login page
+        >
+          New Form
+        </Link>
+      )}
       <Modal open={newForm} closeCB={() => setNewForm(false)}>
         <CreateForm />
       </Modal>

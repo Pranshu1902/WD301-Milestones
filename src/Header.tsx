@@ -1,5 +1,5 @@
 import { link } from "fs";
-import { ActiveLink } from "raviger";
+import { ActiveLink, navigate } from "raviger";
 import React from "react";
 import logo from "./logo.svg";
 import { User } from "./types/userTypes";
@@ -26,6 +26,7 @@ export default function Header(props: { title: string; currentUser: User }) {
                   page: "Logout",
                   onclick: () => {
                     localStorage.removeItem("token");
+                    navigate("/login");
                     window.location.reload();
                   },
                 },

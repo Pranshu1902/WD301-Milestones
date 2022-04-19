@@ -17,6 +17,8 @@ export default function Login() {
     event.preventDefault();
     try {
       const data = await login(username, password);
+      console.log("printing data");
+      console.log(data);
       localStorage.setItem("token", data.token);
       navigate(`/`);
     } catch (error) {

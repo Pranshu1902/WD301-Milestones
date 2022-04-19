@@ -7,7 +7,7 @@ export default function About() {
         About Page
       </div>
       <div className="flex justify-start text-xl">
-        This website was designed and built by Pranshu.
+        This accessible website was designed and built by Pranshu.
       </div>
     </div>
   );

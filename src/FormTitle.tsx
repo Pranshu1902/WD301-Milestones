@@ -5,7 +5,7 @@ export default function FormTitle(props: {
   label: string;
   fieldType: string;
   value?: string;
-  onChangeCB: (e: any) => void;
+  onChangeCB: (e: React.FormEvent<HTMLInputElement>) => void;
 }) {
   return (
     <>

@@ -8,10 +8,10 @@ export default function OptionsInput(props: {
   type: string;
   options: string[];
   option: string;
-  // onChangeCB: (e: any) => void;
-  updateField: (e: any, id: number) => void;
+  // onChangeCB: (e: ) => void;
+  updateField: (e: React.FormEvent<HTMLInputElement>, id: number) => void;
   updateOptions: (e: string) => void;
-  updateFieldType: (e: any, id: number) => void;
+  updateFieldType: (e: React.FormEvent<HTMLSelectElement>, id: number) => void;
   addNewOption: () => void;
   removeField: (id: number) => void;
   removeOption: (id: number, option: string) => void;
@@ -66,24 +66,22 @@ export default function OptionsInput(props: {
               Add Option
             </button>
           </div>
-          <ul
+          <div
             //name="options"
             id="options"
             className="p-2 my-2 border-2 rounded-lg"
-            onChange={(e) => {
-              props.updateFieldType(e, props.id);
-            }}
+            //onChange={(e) => {props.updateFieldType(e, props.id);}}
             //value={props.type}
           >
             {props.options.map((option) => (
-              <li className="flex" key={option}>
+              <div className="flex" key={option}>
                 <button onClick={(_) => props.removeOption(props.id, option)}>
                   ⛔
                 </button>
                 <option value={option}>{option}</option>
-              </li>
+              </div>
             ))}
-          </ul>
+          </div>
           {props.options.length === 0 ? (
             <div className="bg-red-300 text-red-600 rounded-lg p-2">
               Warning: Please add atleast 1 option

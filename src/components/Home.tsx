@@ -24,6 +24,12 @@ export interface form {
 }
 
 const fetchForms = async (setFormCB: (value: formItem[]) => void) => {
+  fetch("https://tsapi.coronasafe.live/api/mock_test/").then((response) =>
+    response.json().then((data) => {
+      setFormCB(data);
+    })
+  );
+
   try {
     const data: Pagination<formItem> = await listForms({ offset: 0, limit: 2 });
     setFormCB(data.results);

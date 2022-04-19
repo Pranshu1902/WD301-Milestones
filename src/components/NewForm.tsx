@@ -258,13 +258,16 @@ export default function Form(props: { id: number }) {
   };
   const [option, optionDispatcher] = useReducer(optionReducer, "");
 
-  const updateField = (e: any, id: number) => {
+  const updateField = (
+    e: React.FormEvent<HTMLInputElement> | React.FormEvent<HTMLTextAreaElement>,
+    id: number
+  ) => {
     let newFields = formState.fields.map((field) => {
       if (field.id === id) {
         console.log(field);
         return {
           ...field,
-          label: e.target.value,
+          label: e.currentTarget.value,
         };
       } else {
         return field;
@@ -282,12 +285,15 @@ export default function Form(props: { id: number }) {
     updateForms(newState);
   };
 
-  const updateFieldType = (e: any, id: number) => {
+  const updateFieldType = (
+    e: React.FormEvent<HTMLSelectElement>,
+    id: number
+  ) => {
     let newFields = formState.fields.map((field) => {
       if (field.id === id) {
         return {
           ...field,
-          type: e.target.value,
+          type: e.currentTarget.value,
         };
       } else {
         return field;
@@ -392,7 +398,7 @@ export default function Form(props: { id: number }) {
             fieldType="text"
             value={formState?.title}
             onChangeCB={(e) => {
-              updateTitle(e.target.value);
+              updateTitle(e.currentTarget.value);
             }}
           />
         </div>

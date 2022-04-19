@@ -12,11 +12,6 @@ export default function CreateForm() {
 
   const [errors, setErrors] = useState<Error<Form>>({});
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
-    setForm({ ...form, [name]: value });
-  };
-
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const validationErrors = validateForm(form);
@@ -36,20 +31,61 @@ export default function CreateForm() {
     <div className="flex flex-col justify-center gap-y-4">
       <p className="text-2xl font-bold">Create Form</p>
       <hr />
-      <p className="text-xl">Title</p>
-      <input className="py-2 border-2 rounded-lg p-2" type="text" />
-      <p className="text-xl">Description</p>
-      <input className="py-2 border-2 rounded-lg p-2" type="text" />
-      <div className="flex">
-        <input className="mt-2 mr-2" type="checkbox" value={"Is Public"} />
-        <p>Is Public</p>
-      </div>
-      <button
-        type="submit"
-        className="text-white font-bold bg-blue-500 hover:bg-blue-800 rounded-lg py-2"
-      >
-        Submit
-      </button>
+      <form onSubmit={handleSubmit}>
+        <div className="flex-col m-2 gap-4 mb-2">
+          <label className={"text-xl"}>Title</label>
+          <br />
+          <input
+            className="py-2 border-2 rounded-lg p-2 w-full"
+            name="title"
+            id="title"
+            value={form.title}
+            type="text"
+            onChange={(e) => {
+              setForm({ ...form, title: e.target.value });
+            }}
+          />
+          {errors.title && <p className="text-red-500">{errors.title}</p>}
+        </div>
+        <div className="flex-col m-2 gap-4 mt-6 mb-6">
+          <label className="text-xl">Description</label>
+          <br />
+          <input
+            className="py-2 border-2 rounded-lg p-2 w-full"
+            name="description"
+            id="description"
+            value={form.description}
+            type="text"
+            onChange={(e) => {
+              setForm({ ...form, description: e.target.value });
+            }}
+          />
+        </div>
+        <div className="flex-col m-2 gap-4">
+          <label>Is Public</label>
+          <input
+            className="m-2"
+            name="is_public"
+            id="is_public"
+            type="checkbox"
+            value={form.is_public ? "true" : "false"}
+            onChange={(e) => {
+              setForm({ ...form, is_public: e.target.checked });
+            }}
+          />
+          {errors.is_public && (
+            <p className="text-red-500">{errors.is_public}</p>
+          )}
+        </div>
+        <div className="flex justify-center">
+          <button
+            type="submit"
+            className="w-2/5 text-white font-bold bg-blue-500 hover:bg-blue-800 rounded-lg py-2"
+          >
+            Submit
+          </button>
+        </div>
+      </form>
     </div>
   );
 }

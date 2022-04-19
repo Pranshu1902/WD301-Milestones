@@ -86,13 +86,15 @@ export default function Preview(props: { id: number }) {
     state.id !== props.id && navigate(`/forms/${state.id}`);
   }, [state.id, props.id]);
 
-  const updateField = (e: any) => {
+  const updateField = (
+    e: React.FormEvent<HTMLInputElement> | React.FormEvent<HTMLTextAreaElement>
+  ) => {
     let newFields = state.fields.map((field) => {
       if (field.id === fieldId) {
         console.log(field);
         return {
           ...field,
-          value: e.target.value,
+          value: e.currentTarget.value,
         };
       } else {
         return field;

@@ -1,5 +1,4 @@
 import React from "react";
-import Header from "./Header";
 import { User } from "./types/userTypes";
 
 export default function AppContainer(props: {

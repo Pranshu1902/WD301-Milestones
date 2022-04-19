@@ -20,7 +20,7 @@ export default function Header(props: { title: string; currentUser: User }) {
         {[
           { page: "Home", url: "/" },
           { page: "About", url: "/about" },
-          ...(props.currentUser
+          ...(localStorage.getItem("token")
             ? [
                 {
                   page: "Logout",
@@ -45,7 +45,7 @@ export default function Header(props: { title: string; currentUser: User }) {
             <button
               key={link.page}
               onClick={link.onclick}
-              className="uppercase p-2 hover:text-blue-700"
+              className="uppercase p-2 hover:text-red-500 font-bold"
             >
               {link.page}
             </button>

@@ -52,7 +52,7 @@ export default function Login() {
         </div>
         <div className="mb-4">
           <button
-            className="w-full border-2 border-gray-200 rounded-lg p-2 my-2 flex-1"
+            className="w-full border-1 font-bold shadow-lg border-gray-200 rounded-lg p-2 my-2 flex-1 bg-green-400 hover:bg-green-600"
             type="submit"
             onClick={(e) => handleSubmit}
           >

@@ -96,7 +96,9 @@ export default function Home() {
           setQuery({ search: searchString });
         }}
       >
-        <label className="text-red-500">🔍Search</label>
+        <label className="text-red-500" htmlFor="search">
+          🔍Search
+        </label>
         <input
           type="text"
           name="search"
@@ -112,8 +114,12 @@ export default function Home() {
           .filter((form) =>
             form.title.toLowerCase().includes(search?.toLowerCase() || "")
           )
-          .map((form) => (
-            <li key={form.id} className="shadow-lg rounded-lg p-2 border-1">
+          .map((form, index) => (
+            <li
+              key={form.id}
+              className="shadow-lg rounded-lg p-6 border-1 pb-12"
+              tabIndex={index}
+            >
               <div className="float-left pt-1 pr-4">
                 {form.title} <br />{" "}
                 <p className="text-gray-500 font-thin">

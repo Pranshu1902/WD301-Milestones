@@ -7,6 +7,8 @@ import { Link, navigate } from "raviger";
 import previewIcon from "../images/eye.png";
 import { formType } from "../types/formType";
 import OptionsInput from "../OptionsInput";
+import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
+import dragIcon from "../images/drag.webp";
 
 export interface formTemplate {
   id: number;
@@ -373,6 +375,42 @@ export default function Form(props: { id: number }) {
     updateForms(newState);
   };
 
+  const updateOrder = (result: any) => {
+    let newFields = formState.fields;
+
+    const fieldName = result.draggableId;
+    const newIndex = result.destination.index;
+
+    console.log(result);
+
+    const fieldIndex = formState.fields.findIndex(
+      (form) => form.label === fieldName
+    );
+    const formToBeMoved = formState.fields.filter(
+      (form) => form.label === fieldName
+    )[0];
+
+    // let updateState = formState;
+
+    newFields.splice(fieldIndex, 1);
+
+    newFields.splice(newIndex, 0, formToBeMoved);
+
+    const updatedFormState = { ...formState, fields: newFields };
+    stateDispatcher({
+      type: "update",
+      newState: updatedFormState,
+    });
+
+    const allForms = getLocalForms();
+    allForms.map((form) => {
+      form.id === props.id
+        ? (form.fields = newFields)
+        : (form.fields = form.fields);
+    });
+    saveLocalForms(allForms);
+  };
+
   return (
     <div className="w-full divide-y-2 divide-dotted flex flex-col gap-2">
       <div className="flex gap-24 justify-center">
@@ -419,65 +457,124 @@ export default function Form(props: { id: number }) {
       </div>
 
       <div>
-        {formState.fields.map((field) =>
-          field.type === "text" ||
-          field.type === "date" ||
-          field.type === "email" ||
-          field.type === "number" ? (
-            <LabelledInput
-              onTypeChangeCB={(e) => {
-                updateFieldType(e, field.id);
-              }}
-              id={field.id}
-              label={field.label}
-              key={field.id}
-              fieldType={field.type}
-              removeFieldCB={() =>
-                newFieldDispachter({
-                  type: "remove_field",
-                  id: field.id,
-                })
-              }
-              value={field.value}
-              optionValue={option}
-              onChangeCB={(e) => {
-                updateField(e, field.id);
-              }}
-              options={field.options}
-            />
-          ) : (
-            <OptionsInput
-              key={field.id}
-              id={field.id}
-              label={field.label}
-              fieldType={field.type}
-              value={field.value}
-              type={field.type}
-              options={field.options}
-              option={option}
-              updateField={(e) => updateField(e, field.id)}
-              updateOptions={(e) =>
-                optionDispatcher({
-                  type: "update_option",
-                  value: e,
-                  id: field.id,
-                })
-              }
-              updateFieldType={updateFieldType}
-              addNewOption={() =>
-                optionDispatcher({
-                  type: "add_option",
-                  id: field.id,
-                  value: option,
-                })
-              }
-              removeField={() => {
-                newFieldDispachter({ type: "remove_field", id: field.id });
-              }}
-              removeOption={removeOption}
-            />
-          )
-        )}
+        <DragDropContext onDragEnd={updateOrder}>
+          <Droppable droppableId="fields">
+            {(provided) => (
+              <ul
+                className="fields"
+                {...provided.droppableProps}
+                ref={provided.innerRef}
+              >
+                {formState.fields.map((field, index) =>
+                  field.type === "text" ||
+                  field.type === "date" ||
+                  field.type === "email" ||
+                  field.type === "number" ? (
+                    <Draggable
+                      key={field.id}
+                      draggableId={field.label}
+                      index={index}
+                    >
+                      {(provided) => (
+                        <li
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                          key={field.id}
+                          className="rounded-lg p-2 border-1 flex justify-center"
+                          tabIndex={index}
+                        >
+                          <img src={dragIcon} width={60} height={10} />
+                          <LabelledInput
+                            onTypeChangeCB={(e) => {
+                              updateFieldType(e, field.id);
+                            }}
+                            id={field.id}
+                            label={field.label}
+                            key={field.id}
+                            fieldType={field.type}
+                            removeFieldCB={() =>
+                              newFieldDispachter({
+                                type: "remove_field",
+                                id: field.id,
+                              })
+                            }
+                            value={field.value}
+                            optionValue={option}
+                            onChangeCB={(e) => {
+                              updateField(e, field.id);
+                            }}
+                            options={field.options}
+                          />
+                        </li>
+                      )}
+                    </Draggable>
+                  ) : (
+                    <Draggable
+                      key={field.id}
+                      draggableId={field.label}
+                      index={index}
+                    >
+                      {(provided) => (
+                        <li
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                          key={field.id}
+                          className="rounded-lg p-2 border-1"
+                          tabIndex={index}
+                        >
+                          <img
+                            className="float-left pt-10"
+                            src={dragIcon}
+                            width={60}
+                            height={5}
+                          />
+                          <div className="float-left">
+                            <OptionsInput
+                              key={field.id}
+                              id={field.id}
+                              label={field.label}
+                              fieldType={field.type}
+                              value={field.value}
+                              type={field.type}
+                              options={field.options}
+                              option={option}
+                              updateField={(e) => updateField(e, field.id)}
+                              updateOptions={(e) =>
+                                optionDispatcher({
+                                  type: "update_option",
+                                  value: e,
+                                  id: field.id,
+                                })
+                              }
+                              updateFieldType={updateFieldType}
+                              addNewOption={() =>
+                                optionDispatcher({
+                                  type: "add_option",
+                                  id: field.id,
+                                  value: option,
+                                })
+                              }
+                              removeField={() => {
+                                newFieldDispachter({
+                                  type: "remove_field",
+                                  id: field.id,
+                                });
+                              }}
+                              removeOption={removeOption}
+                            />
+                          </div>
+                        </li>
+                      )}
+                    </Draggable>
+                  )
+                )}
+                {provided.placeholder}
+              </ul>
+            )}
+          </Droppable>
+        </DragDropContext>
       </div>
 
       <div className="gap-2">

@@ -9,6 +9,7 @@ import Modal from "./common/Modal";
 import CreateForm from "./CreateForm";
 import { deleteForm, listForms } from "../utils/apiUtils";
 import { Pagination } from "../types/common";
+import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 
 export interface formTemplate {
   id: number;
@@ -88,6 +89,22 @@ export default function Home() {
     );
   }, []);
 
+  const updateOrder = (result: any) => {
+    const formTitle = result.draggableId;
+    const formIndex = result.destination.index;
+    const fromIndex = state.findIndex((form) => form.title === formTitle);
+    const formToBeMoved = state.filter((form) => form.title === formTitle)[0];
+
+    let updateState = state;
+
+    updateState.splice(fromIndex, 1);
+
+    updateState.splice(formIndex, 0, formToBeMoved);
+
+    stateDispatcher({ type: "update", newState: updateState });
+    saveLocalForms(updateState);
+  };
+
   return (
     <div className="flex flex-col justify-center gap-y-4">
       <form
@@ -109,68 +126,90 @@ export default function Home() {
           }
         />
       </form>
-      <ul>
-        {state
-          .filter((form) =>
-            form.title.toLowerCase().includes(search?.toLowerCase() || "")
-          )
-          .map((form, index) => (
-            <li
-              key={form.id}
-              className="shadow-lg rounded-lg p-6 border-1 pb-12"
-              tabIndex={index}
+      <DragDropContext onDragEnd={updateOrder}>
+        <Droppable droppableId="characters">
+          {(provided) => (
+            <ul
+              className="characters"
+              {...provided.droppableProps}
+              ref={provided.innerRef}
             >
-              <div className="float-left pt-1 pr-4">
-                {form.title} <br />{" "}
-                <p className="text-gray-500 font-thin">
-                  {/* {form.fields.length}{" "} */}
-                  {/* {form.fields.length === 1 ? "question" : "questions"} */}
-                </p>
-              </div>
-              <button
-                className="ml-2 bg-red-500 text-white font-bold rounded-lg px-4 py-2 hover:bg-red-700 float-right"
-                onClick={() => {
-                  console.log("delete");
-                }} //deleteForm(form.id)}
-              >
-                Delete
-                <img
-                  className="float-right pt-0.5"
-                  src={deleteIcon}
-                  alt="delete"
-                  width={20}
-                  height={20}
-                />
-              </button>
-              <Link
-                className="ml-2 bg-blue-500 text-white font-bold rounded-lg px-4 py-2 hover:bg-blue-700 float-right"
-                href={`/forms/${form.id}`}
-              >
-                Open
-                <img
-                  className="float-right pt-0.5"
-                  src={open}
-                  alt="open"
-                  width={20}
-                  height={20}
-                />
-              </Link>
-              <Link
-                className="bg-green-500 text-white font-bold rounded-lg px-4 py-2 hover:bg-green-700 float-right"
-                href={`/preview/${form.id}`}
-              >
-                Preview
-                <img
-                  className="float-right pt-0.5"
-                  src={previewIcon}
-                  alt="open"
-                  width={20}
-                  height={20}
-                />
-              </Link>
-            </li>
-          ))}
-      </ul>
+              {state
+                .filter((form) =>
+                  form.title.toLowerCase().includes(search?.toLowerCase() || "")
+                )
+                .map((form, index) => (
+                  <Draggable
+                    key={form.id}
+                    draggableId={form.title}
+                    index={index}
+                  >
+                    {(provided) => (
+                      <li
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                        key={form.id}
+                        className="shadow-lg rounded-lg p-6 border-1 pb-12"
+                        tabIndex={index}
+                      >
+                        <div className="float-left pt-1 pr-4">
+                          {form.title} <br />{" "}
+                          <p className="text-gray-500 font-thin">
+                            {/* {form.fields.length}{" "} */}
+                            {/* {form.fields.length === 1 ? "question" : "questions"} */}
+                          </p>
+                        </div>
+                        <button
+                          className="ml-2 bg-red-500 text-white font-bold rounded-lg px-4 py-2 hover:bg-red-700 float-right"
+                          onClick={() => {
+                            console.log("delete");
+                          }} //deleteForm(form.id)}
+                        >
+                          Delete
+                          <img
+                            className="float-right pt-0.5"
+                            src={deleteIcon}
+                            alt="delete"
+                            width={20}
+                            height={20}
+                          />
+                        </button>
+                        <Link
+                          className="ml-2 bg-blue-500 text-white font-bold rounded-lg px-4 py-2 hover:bg-blue-700 float-right"
+                          href={`/forms/${form.id}`}
+                        >
+                          Open
+                          <img
+                            className="float-right pt-0.5"
+                            src={open}
+                            alt="open"
+                            width={20}
+                            height={20}
+                          />
+                        </Link>
+                        <Link
+                          className="bg-green-500 text-white font-bold rounded-lg px-4 py-2 hover:bg-green-700 float-right"
+                          href={`/preview/${form.id}`}
+                        >
+                          Preview
+                          <img
+                            className="float-right pt-0.5"
+                            src={previewIcon}
+                            alt="open"
+                            width={20}
+                            height={20}
+                          />
+                        </Link>
+                      </li>
+                    )}
+                  </Draggable>
+                ))}
+              {provided.placeholder}
+            </ul>
+          )}
+        </Droppable>
+      </DragDropContext>
       {state.length === 0 ? (
         <div className="text-red-500 justify-center text-xl flex">
           No Forms created

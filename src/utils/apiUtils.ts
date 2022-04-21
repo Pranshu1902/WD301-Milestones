@@ -1,6 +1,6 @@
 import { PaginationParams } from "../types/common";
 import { APIFormFields } from "../types/fieldTypes";
-import { Form } from "../types/formType";
+import { FieldsType, Form } from "../types/formType";
 
 const API_BASE_URL = "https://tsapi.coronasafe.live/api/";
 
@@ -51,19 +51,19 @@ export const request = async (
   }
 };
 
-export const createForm = (form: Form) => {
+export const createForm = async (form: Form) => {
   return request("forms/", "POST", form);
 };
 
-export const login = (username: string, password: string) => {
+export const login = async (username: string, password: string) => {
   return request("auth-token/", "POST", { username, password });
 };
 
-export const me = () => {
+export const me = async () => {
   return request("users/me/", "GET", {});
 };
 
-export const listForms = (pageParams: PaginationParams) => {
+export const listForms = async (pageParams: PaginationParams) => {
   return request("forms/", "GET", pageParams);
 };
 
@@ -75,7 +75,7 @@ export async function patchFormData(formId: string, form: Form) {
   return request(`forms/${formId}/`, "PATCH", form);
 }
 
-export async function deleteForm(formId: string) {
+export async function deleteForm(formId: number) {
   return request(`forms/${formId}/`, "DELETE");
 }
 
@@ -83,14 +83,14 @@ export async function getFormFields(formId: string) {
   return request(`forms/${formId}/fields/`);
 }
 
-export async function addField(formId: string, field: APIFormFields) {
+export async function addField(formId: number, field: FieldsType) {
   const newField = {
     label: field.label,
     kind: field.kind,
     options: field.kind !== "text" ? field.options : null,
     value: field.value,
     meta: {
-      fieldType: field.fieldType,
+      fieldType: field.meta.fieldType,
     },
   };
   return request(`forms/${formId}/fields/`, "POST", newField);
@@ -111,6 +111,10 @@ export async function updateField(
     },
   };
   return request(`forms/${formId}/fields/${fieldId}/`, "PUT", payload);
+}
+
+export async function updateFormTitle(formId: number, option: any) {
+  return request(`forms/${formId}/`, "PUT", option);
 }
 
 export async function removeField(formId: string, fieldId: string) {

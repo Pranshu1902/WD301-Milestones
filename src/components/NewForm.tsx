@@ -52,6 +52,8 @@ export default function NewForm(props: { id: number }) {
     fields: [],
   });
 
+  const [currentTitle, setTitle] = useState("");
+
   useEffect(() => {
     listForms({
       offset: 0,
@@ -123,13 +125,9 @@ export default function NewForm(props: { id: number }) {
   };
 
   const updateTitle = (value: string) => {
-    if (value !== "") {
-      const newState = { ...state, title: value };
-      setState(newState);
-
-      updateFormTitle(props.id, newState);
-      patchFormData(props.id, newState);
-    }
+    setState({ ...state, title: value });
+    updateFormTitle(props.id, { ...state, title: value });
+    // patchFormData(props.id, { ...state, title: value });
   };
 
   const removeThisOption = (id: number, option: string) => {
@@ -187,7 +185,8 @@ export default function NewForm(props: { id: number }) {
       ? updatedState.fields.filter((field) => field.id !== id)
       : (updatedState.fields = [Field]);
     setState(updatedState);
-    addField(props.id, Field);
+    deleteFormField(props.id, id, updatedState);
+    // addField(props.id, Field);
   };
 
   const updateThisField = (id: number) => {
@@ -218,10 +217,10 @@ export default function NewForm(props: { id: number }) {
     updateFieldAPI(props.id, id, updatedField);
   };
 
-  useEffect(() => {
+  /*useEffect(() => {
     patchFormData(props.id, state);
     console.log(state);
-  }, []);
+  }, []);*/
 
   const addThisOption = (id: number) => {
     if (option !== "") {
@@ -258,17 +257,24 @@ export default function NewForm(props: { id: number }) {
     setState(updatedFormState);
   };
 
-  /*useEffect(() => {
-    patchFormData(props.id, state);
-  });*/
-  // patchFormData(props.id, state);
-
   const removeThisField = (id: number) => {
-    deleteFormField(props.id, id);
-    // removeField(id);
     let newState = state;
     newState.fields = newState.fields.filter((field) => field.id !== id);
-    setState(newState);
+
+    setState({
+      ...state,
+      fields: state.fields.filter((field) => field.id !== id),
+    });
+
+    deleteFormField(props.id, id, {
+      ...state,
+      fields: state.fields.filter((field) => field.id !== id),
+    });
+
+    patchFormData(props.id, {
+      ...state,
+      fields: state.fields.filter((field) => field.id !== id),
+    });
   };
 
   const addNewFieldAPI = () => {
@@ -297,15 +303,14 @@ export default function NewForm(props: { id: number }) {
           </Link>
         </div>
         <div>
-          <FormTitle
-            id={state.id}
-            label="Form Title"
-            fieldType="text"
-            value={state.title}
-            onChangeCB={(e) => {
-              updateTitle(e.currentTarget.value);
-            }}
-          />
+          <div className="flex gap-4">
+            <input
+              className="border-2 border-gray-200 rounded-lg p-2 my-2 w-full flex-1"
+              value={state.title}
+              type={"text"}
+              onChange={(e) => updateTitle(e.target.value)}
+            />
+          </div>
         </div>
         <div>
           <Link
@@ -421,7 +426,7 @@ export default function NewForm(props: { id: number }) {
                                   addThisOption(field.id);
                                 }}
                                 removeField={() => {
-                                  removeField(field.id);
+                                  removeThisField(field.id);
                                 }}
                                 removeOption={removeThisOption}
                               />

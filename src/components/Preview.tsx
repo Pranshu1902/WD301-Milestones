@@ -117,7 +117,7 @@ export default function Preview(props: { id: number }) {
   return (
     <div>
       <div>
-        <Link className="float-right" href={`/forms/${state.id}`}>
+        <Link className="float-right" href={"/"}>
           <img
             className="hover:scale-125"
             src={closeIcon}

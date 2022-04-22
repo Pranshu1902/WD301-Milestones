@@ -4,8 +4,8 @@ export default function FormTitle(props: {
   id?: number;
   label: string;
   fieldType: string;
-  value?: string;
-  onChangeCB: (e: React.FormEvent<HTMLInputElement>) => void;
+  value: string;
+  onChangeCB: (e: string) => void;
 }) {
   return (
     <>
@@ -13,7 +13,7 @@ export default function FormTitle(props: {
         <input
           className="border-2 border-gray-200 rounded-lg p-2 my-2 w-full flex-1"
           type={props.fieldType}
-          onChange={props.onChangeCB}
+          onChange={(e) => props.onChangeCB(e.target.value)}
           value={props.value}
         />
       </div>

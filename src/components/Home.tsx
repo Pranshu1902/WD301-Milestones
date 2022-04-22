@@ -14,7 +14,6 @@ import {
   putAllFormData,
 } from "../utils/apiUtils";
 import { Pagination } from "../types/common";
-import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 
 export interface formTemplate {
   id: number;
@@ -54,7 +53,7 @@ export default function Home() {
     listForms({
       offset: 0,
       limit: 5,
-    }).then((data) => setState(data.results));
+    }).then((data) => (data ? setState(data.results) : setState([])));
   }, []);
 
   type searchAction = { type: "update"; value: string };
@@ -70,26 +69,6 @@ export default function Home() {
     }
   };
   const [searchString, searchStringDispatcher] = useReducer(searchReducer, "");
-
-  const updateOrder = (result: any) => {
-    const formTitle = result.draggableId;
-    const formIndex = result.destination.index;
-    const fromIndex = currentState.findIndex(
-      (form) => form.title === formTitle
-    );
-    const formToBeMoved = currentState.filter(
-      (form) => form.title === formTitle
-    )[0];
-
-    let updateState = currentState;
-
-    updateState.splice(fromIndex, 1);
-    updateState.splice(formIndex, 0, formToBeMoved);
-
-    setState(updateState);
-    // uploading to the API
-    putAllFormData(currentState);
-  };
 
   const deleteThisForm = (id: number) => {
     deleteForm(id);
@@ -117,87 +96,64 @@ export default function Home() {
           }
         />
       </form>
-      <DragDropContext onDragEnd={updateOrder}>
-        <Droppable droppableId="characters">
-          {(provided) => (
-            <ul
-              className="characters"
-              {...provided.droppableProps}
-              ref={provided.innerRef}
+      <ul>
+        {currentState
+          .filter((form) =>
+            form.title.toLowerCase().includes(search?.toLowerCase() || "")
+          )
+          .map((form, index) => (
+            <li
+              key={form.id}
+              className="shadow-lg rounded-lg p-6 border-1 pb-12"
+              tabIndex={index}
             >
-              {currentState
-                .filter((form) =>
-                  form.title.toLowerCase().includes(search?.toLowerCase() || "")
-                )
-                .map((form, index) => (
-                  <Draggable
-                    key={form.id}
-                    draggableId={form.title}
-                    index={index}
-                  >
-                    {(provided) => (
-                      <li
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
-                        key={form.id}
-                        className="shadow-lg rounded-lg p-6 border-1 pb-12"
-                        tabIndex={index}
-                      >
-                        <div className="float-left pt-1 pr-4">
-                          {form.title} <br />{" "}
-                          <p className="text-gray-500 font-thin"></p>
-                        </div>
-                        <button
-                          className="ml-2 bg-red-500 text-white font-bold rounded-lg px-4 py-2 hover:bg-red-700 float-right"
-                          onClick={() => {
-                            deleteThisForm(form.id);
-                          }}
-                        >
-                          Delete
-                          <img
-                            className="float-right pt-0.5"
-                            src={deleteIcon}
-                            alt="delete"
-                            width={20}
-                            height={20}
-                          />
-                        </button>
-                        <Link
-                          className="ml-2 bg-blue-500 text-white font-bold rounded-lg px-4 py-2 hover:bg-blue-700 float-right"
-                          href={`/forms/${form.id}`}
-                        >
-                          Open
-                          <img
-                            className="float-right pt-0.5"
-                            src={open}
-                            alt="open"
-                            width={20}
-                            height={20}
-                          />
-                        </Link>
-                        <Link
-                          className="bg-green-500 text-white font-bold rounded-lg px-4 py-2 hover:bg-green-700 float-right"
-                          href={`/preview/${form.id}`}
-                        >
-                          Preview
-                          <img
-                            className="float-right pt-0.5"
-                            src={previewIcon}
-                            alt="open"
-                            width={20}
-                            height={20}
-                          />
-                        </Link>
-                      </li>
-                    )}
-                  </Draggable>
-                ))}
-              {provided.placeholder}
-            </ul>
-          )}
-        </Droppable>
-      </DragDropContext>
+              <div className="float-left pt-1 pr-4">
+                {form.title} <br /> <p className="text-gray-500 font-thin"></p>
+              </div>
+              <button
+                className="ml-2 bg-red-500 text-white font-bold rounded-lg px-4 py-2 hover:bg-red-700 float-right"
+                onClick={() => {
+                  deleteThisForm(form.id);
+                }}
+              >
+                Delete
+                <img
+                  className="float-right pt-0.5"
+                  src={deleteIcon}
+                  alt="delete"
+                  width={20}
+                  height={20}
+                />
+              </button>
+              <Link
+                className="ml-2 bg-blue-500 text-white font-bold rounded-lg px-4 py-2 hover:bg-blue-700 float-right"
+                href={`/forms/${form.id}`}
+              >
+                Open
+                <img
+                  className="float-right pt-0.5"
+                  src={open}
+                  alt="open"
+                  width={20}
+                  height={20}
+                />
+              </Link>
+              <Link
+                className="bg-green-500 text-white font-bold rounded-lg px-4 py-2 hover:bg-green-700 float-right"
+                href={`/preview/${form.id}`}
+              >
+                Preview
+                <img
+                  className="float-right pt-0.5"
+                  src={previewIcon}
+                  alt="open"
+                  width={20}
+                  height={20}
+                />
+              </Link>
+            </li>
+          ))}
+      </ul>
       {currentState.length === 0 ? (
         <div className="text-red-500 justify-center text-xl flex">
           No Forms created

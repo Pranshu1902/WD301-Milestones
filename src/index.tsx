@@ -3,6 +3,7 @@ import ReactDOM from "react-dom";
 import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
+import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
 
 /*
 const heading = React.createElement('div', { className: 'text-5xl font-bold text-center' }, 'Hello World');
@@ -18,6 +19,7 @@ const divContainer = React.createElement('div', { className: 'bg-red-500' }, hea
 
 ReactDOM.render(<App />, document.getElementById("root"));
 
+serviceWorkerRegistration.unregister();
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals

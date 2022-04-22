@@ -46,11 +46,24 @@ export type formType =
 // API
 export type formItem = Omit<formType, "fields">;
 
+export type FieldsType = {
+  id: number;
+  label: string;
+  kind: string;
+  options: string[];
+  value: string;
+  meta: { fieldType: string };
+};
+
 export type Form = {
-  id?: number;
+  id: number;
   title: string;
   description?: string;
   is_public?: boolean;
+  created_by: number;
+  created_date: string;
+  modified_date: string;
+  fields: FieldsType[];
 };
 
 export type APIForm = {

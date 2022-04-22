@@ -9,6 +9,10 @@ export default function CreateForm() {
     title: "",
     description: "",
     is_public: false,
+    created_by: 0,
+    created_date: "",
+    modified_date: "",
+    fields: [],
   });
 
   const [errors, setErrors] = useState<Error<Form>>({});

@@ -2,7 +2,6 @@ type fieldType =
   | "text"
   | "email"
   | "number"
-  | "password"
   | "date"
   | "radio"
   | "checkbox"
@@ -11,7 +10,7 @@ type fieldType =
   | "multidropdown";
 
 type textType = {
-  kind: "text";
+  kind: "TEXT";
   id: string;
   label: string;
   value?: string;
@@ -21,7 +20,7 @@ type textType = {
 type radioType = {
   id: string;
   value?: string;
-  kind: "radio";
+  kind: "RADIO";
   fieldType: fieldType;
   label: string;
   options: string[];
@@ -30,7 +29,7 @@ type radioType = {
 type multiSelectType = {
   id: string;
   value?: string;
-  kind: "dropdown";
+  kind: "DROPDOWN";
   fieldType: fieldType;
   label: string;
   options: string[];

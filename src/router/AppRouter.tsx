@@ -3,7 +3,7 @@ import App from "../App";
 import AppContainer from "../AppContainer";
 import About from "../components/About";
 import Home from "../components/Home";
-import Form from "../components/NewForm";
+import NewForm from "../components/NewForm";
 import Header from "../Header";
 import Preview from "../components/Preview";
 import Login from "../components/Login";
@@ -13,7 +13,7 @@ const routes = {
   "/": () => <Home />,
   "/login": () => <Login />,
   "/about": () => <About />,
-  "/forms/:id": ({ id }: { id: string }) => <Form id={Number(id)} />,
+  "/forms/:id": ({ id }: { id: string }) => <NewForm id={Number(id)} />,
   "/preview/:id": ({ id }: { id: string }) => <Preview id={Number(id)} />,
 };
 

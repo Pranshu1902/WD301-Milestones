@@ -7,7 +7,12 @@ import { getLocalForms, saveLocalForms } from "../Data";
 import { formType, formItem, Form, APIForm } from "../types/formType";
 import Modal from "./common/Modal";
 import CreateForm from "./CreateForm";
-import { deleteForm, listForms } from "../utils/apiUtils";
+import {
+  deleteForm,
+  listForms,
+  patchFormData,
+  putAllFormData,
+} from "../utils/apiUtils";
 import { Pagination } from "../types/common";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 
@@ -43,66 +48,45 @@ export default function Home() {
   const [{ search }, setQuery] = useQueryParams();
   const [newForm, setNewForm] = useState(false);
 
-  // formState useReducer
-  type searchFormStateAction = { type: "filter"; value: string };
-  type updateFormStateAction = { type: "update"; newState: formType[] };
+  const [currentState, setState] = useState<Form[]>([]);
 
-  const initialState: formType[] = getLocalForms();
-
-  const formStateReducer = (
-    state: formType[],
-    action: updateFormStateAction | searchFormStateAction
-  ) => {
-    switch (action.type) {
-      case "filter": {
-        return state.filter((form) => form.title.includes(action.value));
-      }
-      case "update": {
-        return action.newState;
-      }
-    }
-  };
-
-  const [state, stateDispatcher] = useReducer(formStateReducer, initialState);
+  listForms({
+    offset: 0,
+    limit: 5,
+  }).then((data) => setState(data.results));
 
   type searchAction = { type: "update"; value: string };
 
   const searchReducer = (state: string, action: searchAction) => {
     switch (action.type) {
       case "update": {
-        stateDispatcher({ type: "filter", value: action.value });
+        setState(
+          currentState.filter((form) => form.title.includes(action.value))
+        );
         return action.value;
       }
     }
   };
   const [searchString, searchStringDispatcher] = useReducer(searchReducer, "");
 
-  /*const deleteForm = (id: number) => {
-    saveLocalForms(getLocalForms().filter((form) => form.id !== id));
-
-    stateDispatcher({ type: "update", newState: getLocalForms() });
-  };*/
-
-  useEffect(() => {
-    fetchForms(() =>
-      stateDispatcher({ type: "update", newState: getLocalForms() })
-    );
-  }, []);
-
   const updateOrder = (result: any) => {
     const formTitle = result.draggableId;
     const formIndex = result.destination.index;
-    const fromIndex = state.findIndex((form) => form.title === formTitle);
-    const formToBeMoved = state.filter((form) => form.title === formTitle)[0];
+    const fromIndex = currentState.findIndex(
+      (form) => form.title === formTitle
+    );
+    const formToBeMoved = currentState.filter(
+      (form) => form.title === formTitle
+    )[0];
 
-    let updateState = state;
+    let updateState = currentState;
 
     updateState.splice(fromIndex, 1);
-
     updateState.splice(formIndex, 0, formToBeMoved);
 
-    stateDispatcher({ type: "update", newState: updateState });
-    saveLocalForms(updateState);
+    setState(updateState);
+    // uploading to the API
+    putAllFormData(currentState);
   };
 
   return (
@@ -134,7 +118,7 @@ export default function Home() {
               {...provided.droppableProps}
               ref={provided.innerRef}
             >
-              {state
+              {currentState
                 .filter((form) =>
                   form.title.toLowerCase().includes(search?.toLowerCase() || "")
                 )
@@ -210,7 +194,7 @@ export default function Home() {
           )}
         </Droppable>
       </DragDropContext>
-      {state.length === 0 ? (
+      {currentState.length === 0 ? (
         <div className="text-red-500 justify-center text-xl flex">
           No Forms created
         </div>

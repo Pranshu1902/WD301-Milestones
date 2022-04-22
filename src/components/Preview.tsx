@@ -1,11 +1,12 @@
-import React, { useEffect, useReducer } from "react";
+import React, { useEffect, useReducer, useState } from "react";
 import PreviewInput from "../PreviewInput";
 import closeIcon from "../images/close.png";
 import { getLocalForms, saveLocalForms, savePreviewData } from "../Data";
 import { Link, navigate } from "raviger";
 import leftArrow from "../images/left.png";
 import rightArrow from "../images/right.png";
-import { formType } from "../types/formType";
+import { Form, formType } from "../types/formType";
+import { getFormFields, listForms } from "../utils/apiUtils";
 
 export interface formTemplate {
   id: number;
@@ -24,30 +25,35 @@ export interface form {
 // const formTemplate = { type: "text", label: "", value: "" };
 
 export default function Preview(props: { id: number }) {
-  type updateFormStateAction = { type: "update"; newState: formType };
+  const [state, setState] = useState<Form>({
+    id: 0,
+    title: "",
+    description: "",
+    is_public: true,
+    created_by: 0,
+    created_date: "",
+    modified_date: "",
+    fields: [],
+  });
 
-  let emptyFields: formTemplate[] = [];
+  useEffect(() => {
+    listForms({
+      offset: 0,
+      limit: 5,
+    }).then((data) => {
+      const forms: Form[] = data.results;
+      let initialState: Form = forms.filter((form) => form.id === props.id)[0];
+      setState(initialState);
+    });
+  }, []);
 
-  let newFormState: formType = {
-    id: Number(new Date()),
-    title: "Untitled Form",
-    fields: emptyFields,
-  };
-
-  const initialState: formType =
-    getLocalForms().filter((form) => form.id === props.id).length !== 0
-      ? getLocalForms().filter((form) => form.id === props.id)[0]
-      : newFormState;
-
-  const formStateReducer = (state: formType, action: updateFormStateAction) => {
-    switch (action.type) {
-      case "update": {
-        return action.newState;
-      }
-    }
-  };
-
-  const [state, stateDispatcher] = useReducer(formStateReducer, initialState);
+  useEffect(() => {
+    getFormFields(props.id).then((data) => {
+      let newState = state;
+      newState.fields = data.results; //data.results ? (newState.fields = data.results) : (newState.fields = []);
+      setState(newState);
+    });
+  }, []);
 
   // useReducer for fieldId
   type nextFieldAction = { type: "next"; value: number };
@@ -79,12 +85,8 @@ export default function Preview(props: { id: number }) {
 
   const [fieldId, fieldIdDispatcher] = useReducer(
     fieldIdReducer,
-    state.fields.length ? state.fields[0].id : 0
+    state.fields && state.fields.length !== 0 ? state.fields[0].id : 0
   );
-
-  useEffect(() => {
-    state.id !== props.id && navigate(`/forms/${state.id}`);
-  }, [state.id, props.id]);
 
   const updateField = (
     e: React.FormEvent<HTMLInputElement> | React.FormEvent<HTMLTextAreaElement>
@@ -106,10 +108,10 @@ export default function Preview(props: { id: number }) {
       fields: newFields,
     };
 
-    // setState(newState);
-    stateDispatcher({ type: "update", newState });
+    setState(newState);
+    // stateDispatcher({ type: "update", newState });
     let updatedPreviewData = getLocalForms();
-    savePreviewData([...updatedPreviewData, newState]);
+    // savePreviewData([...updatedPreviewData, newState]);
   };
 
   return (
@@ -127,101 +129,101 @@ export default function Preview(props: { id: number }) {
       </div>
       <p className="text-3xl flex text-blue-500">{state.title}</p>
       <div>
-        {state.fields.length === 0 ||
-        (state.fields.filter(
-          (field) =>
-            field.type === "radio" ||
-            field.type === "dropdown" ||
-            field.type === "multidropdown"
-        ).length !== 0 &&
-          state.fields
-            .filter(
-              (field) =>
-                field.type === "radio" ||
-                field.type === "dropdown" ||
-                field.type === "multidropdown"
-            )
-            .filter((field) => field.options.length === 0).length !== 0) ? (
-          <div className="justify-center p-6">
-            <p className="flex text-red-500 text-xl">Form not completed yet</p>
-            <br />
-            <Link
-              href="/"
-              className="flex justify-center py-2 rounded-lg bg-green-500 text-white font-bold hover:bg-green-700"
-            >
-              Home
-            </Link>
-          </div>
-        ) : (
-          <div>
-            {state.fields.map((field) =>
-              field.id === fieldId ? (
-                <div key={field.id}>
-                  <div>
-                    <PreviewInput
-                      key={field.id}
-                      id={field.id}
-                      label={field.label}
-                      fieldType={field.type}
-                      value={field.value}
-                      onChangeCB={(e) => {
-                        updateField(e);
-                      }}
-                      options={field.options ? field.options : []}
-                    />
-                    <div className="flex gap-6 justify-center">
-                      <button
-                        onClick={() =>
-                          fieldIdDispatcher({
-                            type: "prev",
-                            value: fieldId,
-                          })
-                        }
-                      >
-                        <img
-                          className="hover:scale-125"
-                          width={30}
-                          height={20}
-                          src={leftArrow}
-                          alt="left"
-                        />
-                      </button>
-                      <button
-                        onClick={() =>
-                          fieldIdDispatcher({
-                            type: "next",
-                            value: fieldId,
-                          })
-                        }
-                      >
-                        <img
-                          className="hover:scale-125"
-                          width={30}
-                          height={20}
-                          src={rightArrow}
-                          alt="right"
-                        />
-                      </button>
+        {state.fields ? (
+          state.fields.length === 0 ||
+          (state.fields.filter(
+            (field) => field.kind === "RADIO" || field.kind === "DROPDOWN"
+          ).length !== 0 &&
+            state.fields
+              .filter(
+                (field) => field.kind === "RADIO" || field.kind === "DROPDOWN"
+              )
+              .filter((field) => field.options.length === 0).length !== 0) ? (
+            <div className="justify-center p-6">
+              <p className="flex text-red-500 text-xl">
+                Form not completed yet
+              </p>
+              <br />
+              <Link
+                href="/"
+                className="flex justify-center py-2 rounded-lg bg-green-500 text-white font-bold hover:bg-green-700"
+              >
+                Home
+              </Link>
+            </div>
+          ) : (
+            <div>
+              {state.fields.map((field) =>
+                field.id === fieldId ? (
+                  <div key={field.id}>
+                    <div>
+                      <PreviewInput
+                        key={field.id}
+                        id={field.id}
+                        label={field.label}
+                        fieldType={field.kind}
+                        value={field.value}
+                        onChangeCB={(e) => {
+                          updateField(e);
+                        }}
+                        options={field.options ? field.options : []}
+                      />
+                      <div className="flex gap-6 justify-center">
+                        <button
+                          onClick={() =>
+                            fieldIdDispatcher({
+                              type: "prev",
+                              value: fieldId,
+                            })
+                          }
+                        >
+                          <img
+                            className="hover:scale-125"
+                            width={30}
+                            height={20}
+                            src={leftArrow}
+                            alt="left"
+                          />
+                        </button>
+                        <button
+                          onClick={() =>
+                            fieldIdDispatcher({
+                              type: "next",
+                              value: fieldId,
+                            })
+                          }
+                        >
+                          <img
+                            className="hover:scale-125"
+                            width={30}
+                            height={20}
+                            src={rightArrow}
+                            alt="right"
+                          />
+                        </button>
+                      </div>
+                    </div>
+                    <div className="flex justify-center p-4">
+                      {fieldId === state.fields[state.fields.length - 1].id ? (
+                        <Link
+                          href="/"
+                          className="rounded-lg bg-green-500 hover:bg-green-700 text-white px-16 py-2"
+                        >
+                          Submit
+                        </Link>
+                      ) : (
+                        <div></div>
+                      )}
                     </div>
                   </div>
-                  <div className="flex justify-center p-4">
-                    {fieldId === state.fields[state.fields.length - 1].id ? (
-                      <Link
-                        href="/"
-                        className="rounded-lg bg-green-500 hover:bg-green-700 text-white px-16 py-2"
-                      >
-                        Submit
-                      </Link>
-                    ) : (
-                      <div></div>
-                    )}
-                  </div>
-                </div>
-              ) : (
-                <div key={field.id}></div>
-              )
-            )}
-          </div>
+                ) : (
+                  <div key={field.id}></div>
+                )
+              )}
+            </div>
+          )
+        ) : (
+          <div></div>
         )}
       </div>
     </div>

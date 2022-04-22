@@ -125,8 +125,12 @@ export async function getOptions(formId: string, fieldId: string) {
   return request(`forms/${formId}/fields/${fieldId}/options/`, "GET");
 }
 
-export async function addOption(formId: string, fieldId: string, option: any) {
-  return request(`forms/${formId}/fields/${fieldId}/options/`, "POST", option);
+export async function updateField(
+  formId: number,
+  fieldId: number,
+  option: any
+) {
+  return request(`forms/${formId}/fields/${fieldId}/`, "PUT", option);
 }
 
 export async function removeOption(

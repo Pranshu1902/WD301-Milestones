@@ -195,12 +195,18 @@ export default function NewForm(props: { id: number }) {
 
   useEffect(() => {
     patchFormData(props.id, state);
+    console.log(state);
   }, []);
 
   const addThisOption = (id: number) => {
     if (option !== "") {
       state.fields.filter((field) => field.id === id)[0].options.push(option);
     }
+    updateFieldAPI(
+      props.id,
+      id,
+      state.fields.filter((field) => field.id === id)[0]
+    );
     setOption("");
     patchFormData(props.id, state);
   };

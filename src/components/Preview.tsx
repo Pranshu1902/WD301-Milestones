@@ -49,9 +49,7 @@ export default function Preview(props: { id: number }) {
 
   useEffect(() => {
     getFormFields(props.id).then((data) => {
-      let newState = state;
-      newState.fields = data.results; //data.results ? (newState.fields = data.results) : (newState.fields = []);
-      setState(newState);
+      setState({ ...state, fields: data.results });
     });
   }, []);
 
@@ -223,7 +221,7 @@ export default function Preview(props: { id: number }) {
             </div>
           )
         ) : (
-          <div></div>
+          <div>No Fields</div>
         )}
       </div>
     </div>

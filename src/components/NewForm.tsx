@@ -66,13 +66,19 @@ export default function NewForm(props: { id: number }) {
     });
   }, []);
 
-  useEffect(() => {
+  /*useEffect(() => {
     getFormFields(props.id).then((data) => {
       //let newState = state;
       //newState.fields = data.results; //data.results ? (newState.fields = data.results) : (newState.fields = []);
       setState({ ...state, fields: data.results });
     });
-  }, []);
+  }, []);*/
+
+  getFormFields(props.id).then((data) => {
+    //let newState = state;
+    //newState.fields = data.results; //data.results ? (newState.fields = data.results) : (newState.fields = []);
+    setState({ ...state, fields: data.results });
+  });
 
   const [newField, setNewField] = useState({ label: "", type: "" });
 

@@ -1,15 +1,22 @@
 import { useRoutes } from "raviger";
 import AppContainer from "../AppContainer";
 import About from "../components/About";
-import Home from "../components/Home";
+// import Home from "../components/Home";
 import NewForm from "../components/NewForm";
 import Header from "../Header";
 import Preview from "../components/Preview";
 import Login from "../components/Login";
 import { User } from "../types/userTypes";
+import React from "react";
+
+const Home = React.lazy(() => import("../components/Home"));
 
 const routes = {
-  "/": () => <Home />,
+  "/": () => (
+    <React.Suspense fallback={<div>Loading...</div>}>
+      <Home />
+    </React.Suspense>
+  ),
   "/login": () => <Login />,
   "/about": () => <About />,
   "/forms/:id": ({ id }: { id: string }) => <NewForm id={Number(id)} />,

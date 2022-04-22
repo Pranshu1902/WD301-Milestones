@@ -50,10 +50,12 @@ export default function Home() {
 
   const [currentState, setState] = useState<Form[]>([]);
 
-  listForms({
-    offset: 0,
-    limit: 5,
-  }).then((data) => setState(data.results));
+  useEffect(() => {
+    listForms({
+      offset: 0,
+      limit: 5,
+    }).then((data) => setState(data.results));
+  }, []);
 
   type searchAction = { type: "update"; value: string };
 
@@ -87,6 +89,11 @@ export default function Home() {
     setState(updateState);
     // uploading to the API
     putAllFormData(currentState);
+  };
+
+  const deleteThisForm = (id: number) => {
+    deleteForm(id);
+    setState(currentState.filter((form) => form.id !== id));
   };
 
   return (
@@ -139,16 +146,13 @@ export default function Home() {
                       >
                         <div className="float-left pt-1 pr-4">
                           {form.title} <br />{" "}
-                          <p className="text-gray-500 font-thin">
-                            {/* {form.fields.length}{" "} */}
-                            {/* {form.fields.length === 1 ? "question" : "questions"} */}
-                          </p>
+                          <p className="text-gray-500 font-thin"></p>
                         </div>
                         <button
                           className="ml-2 bg-red-500 text-white font-bold rounded-lg px-4 py-2 hover:bg-red-700 float-right"
                           onClick={() => {
-                            console.log("delete");
-                          }} //deleteForm(form.id)}
+                            deleteThisForm(form.id);
+                          }}
                         >
                           Delete
                           <img

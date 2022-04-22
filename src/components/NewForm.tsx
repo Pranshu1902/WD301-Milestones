@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import LabelledInput from "../LabelledInput";
 import closeIcon from "../images/close.png";
 import FormTitle from "../FormTitle";
-import { Link } from "raviger";
+import { Link, navigate } from "raviger";
 import previewIcon from "../images/eye.png";
 import { FieldsType, Form } from "../types/formType";
 import OptionsInput from "../OptionsInput";
@@ -10,10 +10,12 @@ import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import dragIcon from "../images/drag.webp";
 import {
   addField,
+  deleteFormField,
   getFormFields,
   listForms,
   patchFormData,
   removeOption,
+  updateField,
   updateFieldAPI,
   updateFormTitle,
 } from "../utils/apiUtils";
@@ -73,7 +75,7 @@ export default function NewForm(props: { id: number }) {
 
   const [option, setOption] = useState("");
 
-  const updateField = (
+  /*const updateField = (
     e: React.FormEvent<HTMLInputElement> | React.FormEvent<HTMLTextAreaElement>,
     id: number
   ) => {
@@ -95,7 +97,7 @@ export default function NewForm(props: { id: number }) {
     };
 
     setState(newState);
-  };
+  };*/
 
   const updateFieldType = (
     e: React.FormEvent<HTMLSelectElement>,
@@ -121,10 +123,13 @@ export default function NewForm(props: { id: number }) {
   };
 
   const updateTitle = (value: string) => {
-    const newState = { ...state, title: value };
-    setState(newState);
+    if (value !== "") {
+      const newState = { ...state, title: value };
+      setState(newState);
 
-    updateFormTitle(props.id, newState);
+      updateFormTitle(props.id, newState);
+      patchFormData(props.id, newState);
+    }
   };
 
   const removeThisOption = (id: number, option: string) => {
@@ -253,6 +258,26 @@ export default function NewForm(props: { id: number }) {
     setState(updatedFormState);
   };
 
+  /*useEffect(() => {
+    patchFormData(props.id, state);
+  });*/
+  // patchFormData(props.id, state);
+
+  const removeThisField = (id: number) => {
+    deleteFormField(props.id, id);
+    // removeField(id);
+    let newState = state;
+    newState.fields = newState.fields.filter((field) => field.id !== id);
+    setState(newState);
+  };
+
+  const addNewFieldAPI = () => {
+    addNewField();
+    setNewField({ label: "", type: "" });
+
+    patchFormData(props.id, state);
+  };
+
   return (
     <div className="w-full divide-y-2 divide-dotted flex flex-col gap-2">
       <div className="flex gap-24 justify-center">
@@ -273,10 +298,10 @@ export default function NewForm(props: { id: number }) {
         </div>
         <div>
           <FormTitle
-            id={state?.id}
+            id={state.id}
             label="Form Title"
             fieldType="text"
-            value={state?.title}
+            value={state.title}
             onChangeCB={(e) => {
               updateTitle(e.currentTarget.value);
             }}
@@ -333,13 +358,17 @@ export default function NewForm(props: { id: number }) {
                               label={field.label}
                               key={field.id}
                               fieldType={field.kind}
-                              removeFieldCB={() => {
-                                removeField(field.id);
+                              removeFieldCB={(e) => {
+                                removeThisField(field.id);
                               }}
                               value={field.value}
                               optionValue={option}
                               onChangeCB={(e) => {
-                                updateField(e, field.id);
+                                updateField(
+                                  props.id,
+                                  field.id,
+                                  e.currentTarget.value
+                                );
                               }}
                               options={field.options}
                             />
@@ -377,7 +406,13 @@ export default function NewForm(props: { id: number }) {
                                 type={field.kind}
                                 options={field.options}
                                 option={option}
-                                updateField={(e) => updateField(e, field.id)}
+                                updateField={(e) =>
+                                  updateField(
+                                    props.id,
+                                    field.id,
+                                    e.currentTarget.value
+                                  )
+                                }
                                 updateOptions={(e) => {
                                   setOption(e);
                                 }}
@@ -442,9 +477,8 @@ export default function NewForm(props: { id: number }) {
         <div className="flex items-bottom">
           <button
             className="px-6 m-4 py-1 shadow-lg font-bold text-white bg-blue-500 hover:bg-blue-800 rounded-lg"
-            onClick={(e) => {
-              addNewField();
-              setNewField({ label: "", type: "" });
+            onClick={() => {
+              addNewFieldAPI();
             }}
           >
             Add Field
@@ -456,8 +490,12 @@ export default function NewForm(props: { id: number }) {
         <button
           type="submit"
           className="mt-4 shadow-xl px-12 py-2 text-white bg-green-500 hover:bg-green-800 rounded-lg font-bold"
+          onClick={() => {
+            patchFormData(props.id, state);
+            navigate("/");
+          }}
         >
-          Submit
+          Done
         </button>
       </div>
     </div>

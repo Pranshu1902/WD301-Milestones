@@ -71,7 +71,7 @@ export async function getFormData(formId: number) {
   return request(`forms/${formId}/`);
 }
 
-export async function patchFormData(formId: number, form: Form) {
+export async function patchFormData(formId: number, form: any) {
   return request(`forms/${formId}/`, "PUT", form);
 }
 
@@ -81,6 +81,10 @@ export async function putAllFormData(updatedForms: Form[]) {
 
 export async function deleteForm(formId: number) {
   return request(`forms/${formId}/`, "DELETE");
+}
+
+export async function deleteFormField(formId: number, fieldId: number) {
+  return request(`forms/${formId}/fields/${fieldId}/`, "DELETE");
 }
 
 export async function getFormFields(formId: number) {

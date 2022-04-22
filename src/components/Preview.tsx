@@ -82,9 +82,9 @@ export default function Preview(props: { id: number }) {
     state.fields.length ? state.fields[0].id : 0
   );
 
-  useEffect(() => {
+  /*useEffect(() => {
     state.id !== props.id && navigate(`/forms/${state.id}`);
-  }, [state.id, props.id]);
+  }, [state.id, props.id]);*/
 
   const updateField = (
     e: React.FormEvent<HTMLInputElement> | React.FormEvent<HTMLTextAreaElement>

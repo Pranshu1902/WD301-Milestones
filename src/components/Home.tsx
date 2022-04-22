@@ -1,14 +1,12 @@
-import React, { useReducer, useEffect, useState } from "react";
-import { Link, navigate, useQueryParams } from "raviger";
+import React, { useReducer, useState } from "react";
+import { Link, useQueryParams } from "raviger";
 import open from "../images/open.png";
 import deleteIcon from "../images/delete.png";
 import previewIcon from "../images/eye.png";
-import { getLocalForms, saveLocalForms } from "../Data";
-import { formType, formItem, Form, APIForm } from "../types/formType";
+import { Form } from "../types/formType";
 import Modal from "./common/Modal";
 import CreateForm from "./CreateForm";
 import { deleteForm, listForms } from "../utils/apiUtils";
-import { Pagination } from "../types/common";
 
 export interface formTemplate {
   id: number;
@@ -23,56 +21,16 @@ export interface form {
   fields: formTemplate[];
 }
 
-const fetchForms = async (setFormCB: (value: formItem[]) => void) => {
-  fetch("https://tsapi.coronasafe.live/api/mock_test/").then((response) =>
-    response.json().then((data) => {
-      setFormCB(data);
-    })
-  );
-
-  try {
-    const data: Pagination<formItem> = await listForms({ offset: 0, limit: 5 });
-    setFormCB(data.results);
-  } catch (error) {
-    console.log(error);
-  }
-};
-
 export default function Home() {
   const [{ search }, setQuery] = useQueryParams();
   const [newForm, setNewForm] = useState(false);
 
-  // formState useReducer
-  type searchFormStateAction = { type: "filter"; value: string };
-  type updateFormStateAction = { type: "update"; newState: formType[] };
-
   const [currentState, setState] = useState<Form[]>([]);
 
-  /*const initialState: Form[] = listForms({
-    offset: 0,
-    limit: 5,
-  }).then((data) => data.results);*/
-
-  let allForms = listForms({
+  listForms({
     offset: 0,
     limit: 5,
   }).then((data) => setState(data.results));
-
-  const formStateReducer = (
-    state: Form[],
-    action: updateFormStateAction | searchFormStateAction
-  ) => {
-    switch (action.type) {
-      case "filter": {
-        return state.filter((form) => form.title.includes(action.value));
-      }
-      case "update": {
-        return action.newState;
-      }
-    }
-  };
-
-  // const [state, stateDispatcher] = useReducer(formStateReducer, initialState);
 
   type searchAction = { type: "update"; value: string };
 
@@ -82,31 +40,11 @@ export default function Home() {
         setState(
           currentState.filter((form) => form.title.includes(action.value))
         );
-        // stateDispatcher({ type: "filter", value: action.value });
         return action.value;
       }
     }
   };
   const [searchString, searchStringDispatcher] = useReducer(searchReducer, "");
-
-  /*const deleteForm = (id: number) => {
-    saveLocalForms(getLocalForms().filter((form) => form.id !== id));
-
-    stateDispatcher({ type: "update", newState: getLocalForms() });
-  };*/
-  const deleteThisForm = (id: number) => {
-    deleteForm(id).then((data) => {
-      setState(data.results);
-      navigate("/");
-      window.location.reload();
-    });
-  };
-
-  /*useEffect(() => {
-    fetchForms(() =>
-      stateDispatcher({ type: "update", newState: getLocalForms() })
-    );
-  }, []);*/
 
   return (
     <div className="flex flex-col justify-center gap-y-4">
@@ -143,7 +81,7 @@ export default function Home() {
             <button
               className="ml-2 bg-red-500 text-white font-bold rounded-lg px-4 py-2 hover:bg-red-700 float-right"
               onClick={() => {
-                deleteThisForm(form.id);
+                deleteForm(form.id);
               }}
             >
               Delete

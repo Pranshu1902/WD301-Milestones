@@ -67,23 +67,23 @@ export const listForms = async (pageParams: PaginationParams) => {
   return request("forms/", "GET", pageParams);
 };
 
-export async function getFormData(formId: string) {
+export async function getFormData(formId: number) {
   return request(`forms/${formId}/`);
 }
 
-export async function patchFormData(formId: string, form: Form) {
-  return request(`forms/${formId}/`, "PATCH", form);
+export async function patchFormData(formId: number, form: Form) {
+  return request(`forms/${formId}/`, "PUT", form);
 }
 
 export async function deleteForm(formId: number) {
   return request(`forms/${formId}/`, "DELETE");
 }
 
-export async function getFormFields(formId: string) {
+export async function getFormFields(formId: number) {
   return request(`forms/${formId}/fields/`);
 }
 
-export async function addField(formId: number, field: FieldsType) {
+export function addField(formId: number, field: FieldsType) {
   const newField = {
     label: field.label,
     kind: field.kind,
@@ -129,26 +129,10 @@ export async function addOption(formId: string, fieldId: string, option: any) {
   return request(`forms/${formId}/fields/${fieldId}/options/`, "POST", option);
 }
 
-export async function updateOption(
-  formId: string,
-  fieldId: string,
-  optionId: string,
-  option: any
-) {
-  return request(
-    `forms/${formId}/fields/${fieldId}/options/${optionId}/`,
-    "PUT",
-    option
-  );
-}
-
 export async function removeOption(
-  formId: string,
-  fieldId: string,
-  optionId: string
+  formId: number,
+  fieldId: number,
+  newFields: FieldsType
 ) {
-  return request(
-    `forms/${formId}/fields/${fieldId}/options/${optionId}/`,
-    "DELETE"
-  );
+  return request(`forms/${formId}/fields/${fieldId}/`, "DELETE", { newFields });
 }

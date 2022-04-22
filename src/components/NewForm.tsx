@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import LabelledInput from "../LabelledInput";
 import closeIcon from "../images/close.png";
-import FormTitle from "../FormTitle";
 import { Link, navigate } from "raviger";
 import previewIcon from "../images/eye.png";
 import { FieldsType, Form } from "../types/formType";
@@ -11,7 +10,6 @@ import dragIcon from "../images/drag.webp";
 import {
   addField,
   deleteFormField,
-  getFormData,
   getFormFields,
   listForms,
   patchFormData,
@@ -61,52 +59,17 @@ export default function NewForm(props: { id: number }) {
       limit: 5,
     }).then((data) => {
       const forms: Form[] = data.results;
-      //let initialState: Form = forms.filter((form) => form.id === props.id)[0];
       setState(forms.filter((form) => form.id === props.id)[0]);
     });
-  }, []);
-
-  /*useEffect(() => {
-    getFormFields(props.id).then((data) => {
-      //let newState = state;
-      //newState.fields = data.results; //data.results ? (newState.fields = data.results) : (newState.fields = []);
-      setState({ ...state, fields: data.results });
-    });
-  }, []);*/
+  }, [props.id]);
 
   getFormFields(props.id).then((data) => {
-    //let newState = state;
-    //newState.fields = data.results; //data.results ? (newState.fields = data.results) : (newState.fields = []);
     setState({ ...state, fields: data.results });
   });
 
   const [newField, setNewField] = useState({ label: "", type: "" });
 
   const [option, setOption] = useState("");
-
-  /*const updateField = (
-    e: React.FormEvent<HTMLInputElement> | React.FormEvent<HTMLTextAreaElement>,
-    id: number
-  ) => {
-    let newFields = state.fields.map((field) => {
-      if (field.id === id) {
-        console.log(field);
-        return {
-          ...field,
-          label: e.currentTarget.value,
-        };
-      } else {
-        return field;
-      }
-    });
-
-    let newState = {
-      ...state,
-      fields: newFields,
-    };
-
-    setState(newState);
-  };*/
 
   const updateFieldType = (
     e: React.FormEvent<HTMLSelectElement>,
@@ -179,56 +142,6 @@ export default function NewForm(props: { id: number }) {
       addField(props.id, Field);
     }
   };
-
-  const removeField = (id: number) => {
-    const Field: FieldsType = {
-      ...defaultField,
-      id: Number(new Date()),
-      label: newField.label,
-      kind: newField.type,
-    };
-
-    const updatedState = state;
-    updatedState.fields
-      ? updatedState.fields.filter((field) => field.id !== id)
-      : (updatedState.fields = [Field]);
-    setState(updatedState);
-    deleteFormField(props.id, id, updatedState);
-    // addField(props.id, Field);
-  };
-
-  const updateThisField = (id: number) => {
-    let updatedFields = state.fields.map((field) => {
-      if (field.id === id) {
-        return {
-          ...field,
-          label: newField.label,
-          kind: newField.type,
-        };
-      } else {
-        return field;
-      }
-    });
-
-    let newState = {
-      ...state,
-      fields: updatedFields,
-    };
-
-    const updatedField: FieldsType = {
-      ...state.fields.filter((field) => field.id === id)[0],
-      label: newField.label,
-      kind: newField.type,
-    };
-
-    setState(newState);
-    updateFieldAPI(props.id, id, updatedField);
-  };
-
-  /*useEffect(() => {
-    patchFormData(props.id, state);
-    console.log(state);
-  }, []);*/
 
   const addThisOption = (id: number) => {
     if (option !== "") {
@@ -315,7 +228,7 @@ export default function NewForm(props: { id: number }) {
           <div className="flex gap-4">
             <input
               className="border-2 border-gray-200 rounded-lg p-2 my-2 w-full flex-1"
-              value={state.title}
+              value={currentTitle}
               type={"text"}
               onChange={(e) => updateTitle(e.target.value)}
             />
@@ -363,7 +276,12 @@ export default function NewForm(props: { id: number }) {
                             className="rounded-lg p-2 border-1 flex justify-center"
                             tabIndex={index}
                           >
-                            <img src={dragIcon} width={60} height={10} />
+                            <img
+                              src={dragIcon}
+                              width={60}
+                              height={10}
+                              alt={"drag"}
+                            />
                             <LabelledInput
                               onTypeChangeCB={(e) => {
                                 updateFieldType(e, field.id);
@@ -409,6 +327,7 @@ export default function NewForm(props: { id: number }) {
                               src={dragIcon}
                               width={60}
                               height={5}
+                              alt={"drag"}
                             />
                             <div className="float-left">
                               <OptionsInput

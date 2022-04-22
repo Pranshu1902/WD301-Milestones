@@ -3,17 +3,10 @@ import { Link, useQueryParams } from "raviger";
 import open from "../images/open.png";
 import deleteIcon from "../images/delete.png";
 import previewIcon from "../images/eye.png";
-import { getLocalForms, saveLocalForms } from "../Data";
-import { formType, formItem, Form, APIForm } from "../types/formType";
+import { Form } from "../types/formType";
 import Modal from "./common/Modal";
 import CreateForm from "./CreateForm";
-import {
-  deleteForm,
-  listForms,
-  patchFormData,
-  putAllFormData,
-} from "../utils/apiUtils";
-import { Pagination } from "../types/common";
+import { deleteForm, listForms } from "../utils/apiUtils";
 
 export interface formTemplate {
   id: number;
@@ -27,21 +20,6 @@ export interface form {
   title: string;
   fields: formTemplate[];
 }
-
-const fetchForms = async (setFormCB: (value: formItem[]) => void) => {
-  fetch("https://tsapi.coronasafe.live/api/mock_test/").then((response) =>
-    response.json().then((data) => {
-      setFormCB(data);
-    })
-  );
-
-  try {
-    const data: Pagination<formItem> = await listForms({ offset: 0, limit: 2 });
-    setFormCB(data.results);
-  } catch (error) {
-    console.log(error);
-  }
-};
 
 export default function Home() {
   const [{ search }, setQuery] = useQueryParams();
@@ -146,7 +124,7 @@ export default function Home() {
                 <img
                   className="float-right pt-0.5"
                   src={previewIcon}
-                  alt="open"
+                  alt="preview"
                   width={20}
                   height={20}
                 />

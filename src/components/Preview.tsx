@@ -1,11 +1,11 @@
 import React, { useEffect, useReducer, useState } from "react";
 import PreviewInput from "../PreviewInput";
 import closeIcon from "../images/close.png";
-import { getLocalForms, saveLocalForms, savePreviewData } from "../Data";
-import { Link, navigate } from "raviger";
+import { getLocalForms } from "../Data";
+import { Link } from "raviger";
 import leftArrow from "../images/left.png";
 import rightArrow from "../images/right.png";
-import { Form, formType } from "../types/formType";
+import { Form } from "../types/formType";
 import { getFormFields, listForms } from "../utils/apiUtils";
 
 export interface formTemplate {
@@ -45,13 +45,13 @@ export default function Preview(props: { id: number }) {
       let initialState: Form = forms.filter((form) => form.id === props.id)[0];
       setState(initialState);
     });
-  }, []);
+  }, [props.id]);
 
   useEffect(() => {
     getFormFields(props.id).then((data) => {
       setState({ ...state, fields: data.results });
     });
-  }, []);
+  }, [props.id, state]);
 
   // useReducer for fieldId
   type nextFieldAction = { type: "next"; value: number };
@@ -107,9 +107,6 @@ export default function Preview(props: { id: number }) {
     };
 
     setState(newState);
-    // stateDispatcher({ type: "update", newState });
-    let updatedPreviewData = getLocalForms();
-    // savePreviewData([...updatedPreviewData, newState]);
   };
 
   return (

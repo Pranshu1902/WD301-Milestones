@@ -7,7 +7,12 @@ import { Link, navigate } from "raviger";
 import previewIcon from "../images/eye.png";
 import { FieldsType, Form, formType } from "../types/formType";
 import OptionsInput from "../OptionsInput";
-import { addField, listForms, updateFormTitle } from "../utils/apiUtils";
+import {
+  addField,
+  listForms,
+  updateFieldAPI,
+  updateFormTitle,
+} from "../utils/apiUtils";
 
 export interface formTemplate {
   id: number;
@@ -403,19 +408,49 @@ export default function NewForm(props: { id: number }) {
   };
 
   const addNewField = () => {
-    const Field: FieldsType = {
-      ...defaultField,
-      id: Number(new Date()),
+    if (newField.label !== "" && newField.type !== "") {
+      const Field: FieldsType = {
+        ...defaultField,
+        id: Number(new Date()),
+        label: newField.label,
+        kind: newField.type,
+      };
+
+      const updatedState = state;
+      updatedState.fields
+        ? updatedState.fields.push(Field)
+        : (updatedState.fields = [Field]);
+      setState(updatedState);
+      addField(props.id, Field);
+    }
+  };
+
+  const updateThisField = (id: number) => {
+    let updatedFields = state.fields.map((field) => {
+      if (field.id === id) {
+        return {
+          ...field,
+          label: newField.label,
+          kind: newField.type,
+        };
+      } else {
+        return field;
+      }
+    });
+
+    let newState = {
+      ...state,
+      fields: updatedFields,
+    };
+
+    const updatedField: FieldsType = {
+      ...state.fields.filter((field) => field.id === id)[0],
       label: newField.label,
       kind: newField.type,
     };
 
-    const updatedState = state;
-    updatedState.fields
-      ? updatedState.fields.push(Field)
-      : (updatedState.fields = [Field]);
-    setState(updatedState);
-    addField(props.id, Field);
+    setState(newState);
+    updateFieldAPI(props.id, id, updatedField);
   };
 
   return (
@@ -491,7 +526,8 @@ export default function NewForm(props: { id: number }) {
                   value={field.value}
                   optionValue={option}
                   onChangeCB={(e) => {
-                    updateField(e, field.id);
+                    updateThisField(field.id);
+                    // updateField(e, field.id);
                   }}
                   options={field.options}
                 />
@@ -505,7 +541,10 @@ export default function NewForm(props: { id: number }) {
                   type={field.kind}
                   options={field.options}
                   option={option}
-                  updateField={(e) => updateField(e, field.id)}
+                  updateField={(e) => {
+                    updateThisField(field.id);
+                    // updateField(e, field.id);
+                  }}
                   updateOptions={(e) => {
                     setOption(e);
                     /*optionDispatcher({

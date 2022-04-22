@@ -2,7 +2,6 @@ type fieldType =
   | "text"
   | "email"
   | "number"
-  | "password"
   | "date"
   | "radio"
   | "checkbox"

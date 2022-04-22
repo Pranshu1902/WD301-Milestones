@@ -87,7 +87,7 @@ export async function addField(formId: number, field: FieldsType) {
   const newField = {
     label: field.label,
     kind: field.kind,
-    options: field.kind !== "text" ? field.options : null,
+    options: field.options,
     value: field.value,
     meta: {
       fieldType: field.meta.fieldType,
@@ -96,10 +96,10 @@ export async function addField(formId: number, field: FieldsType) {
   return request(`forms/${formId}/fields/`, "POST", newField);
 }
 
-export async function updateField(
-  formId: string,
-  fieldId: string,
-  field: APIFormFields
+export async function updateFieldAPI(
+  formId: number,
+  fieldId: number,
+  field: FieldsType
 ) {
   const payload = {
     label: field.label,
@@ -107,7 +107,7 @@ export async function updateField(
     options: field.kind !== "text" ? field.options : null,
     value: field.value,
     meta: {
-      fieldType: field.fieldType,
+      fieldType: field.meta.fieldType,
     },
   };
   return request(`forms/${formId}/fields/${fieldId}/`, "PUT", payload);

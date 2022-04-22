@@ -25,9 +25,6 @@ export const request = async (
     payload = data ? JSON.stringify(data) : "";
   }
 
-  // Basic Authentication
-  // const auth = "Basic " + window.btoa("pranshu1902:ULX28qn2WvhsG3v");
-
   // Token Authentication
   const token = localStorage.getItem("token");
   const auth = token ? "Token " + localStorage.getItem("token") : "";

@@ -1,12 +1,14 @@
-import React, { useReducer, useState } from "react";
+import React, { useReducer, useEffect, useState } from "react";
 import { Link, useQueryParams } from "raviger";
 import open from "../images/open.png";
 import deleteIcon from "../images/delete.png";
 import previewIcon from "../images/eye.png";
-import { Form } from "../types/formType";
+import { getLocalForms, saveLocalForms } from "../Data";
+import { formType, formItem, Form, APIForm } from "../types/formType";
 import Modal from "./common/Modal";
 import CreateForm from "./CreateForm";
 import { deleteForm, listForms } from "../utils/apiUtils";
+import { Pagination } from "../types/common";
 
 export interface formTemplate {
   id: number;
@@ -21,16 +23,33 @@ export interface form {
   fields: formTemplate[];
 }
 
+const fetchForms = async (setFormCB: (value: formItem[]) => void) => {
+  fetch("https://tsapi.coronasafe.live/api/mock_test/").then((response) =>
+    response.json().then((data) => {
+      setFormCB(data);
+    })
+  );
+
+  try {
+    const data: Pagination<formItem> = await listForms({ offset: 0, limit: 2 });
+    setFormCB(data.results);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 export default function Home() {
   const [{ search }, setQuery] = useQueryParams();
   const [newForm, setNewForm] = useState(false);
 
   const [currentState, setState] = useState<Form[]>([]);
 
-  listForms({
-    offset: 0,
-    limit: 5,
-  }).then((data) => setState(data.results));
+  useEffect(() => {
+    listForms({
+      offset: 0,
+      limit: 5,
+    }).then((data) => (data ? setState(data.results) : setState([])));
+  }, []);
 
   type searchAction = { type: "update"; value: string };
 
@@ -46,6 +65,11 @@ export default function Home() {
   };
   const [searchString, searchStringDispatcher] = useReducer(searchReducer, "");
 
+  const deleteThisForm = (id: number) => {
+    deleteForm(id);
+    setState(currentState.filter((form) => form.id !== id));
+  };
+
   return (
     <div className="flex flex-col justify-center gap-y-4">
       <form
@@ -54,7 +78,9 @@ export default function Home() {
           setQuery({ search: searchString });
         }}
       >
-        <label className="text-red-500">🔍Search</label>
+        <label className="text-red-500" htmlFor="search">
+          🔍Search
+        </label>
         <input
           type="text"
           name="search"
@@ -65,62 +91,64 @@ export default function Home() {
           }
         />
       </form>
-      {currentState
-        .filter((form) =>
-          form.title.toLowerCase().includes(search?.toLowerCase() || "")
-        )
-        .map((form) => (
-          <div key={form.id} className="shadow-lg rounded-lg p-2 border-1">
-            <div className="float-left pt-1 pr-4">
-              {form.title} <br />{" "}
-              <p className="text-gray-500 font-thin">
-                {/* {form.fields.length}{" "} */}
-                {/* {form.fields.length === 1 ? "question" : "questions"} */}
-              </p>
-            </div>
-            <button
-              className="ml-2 bg-red-500 text-white font-bold rounded-lg px-4 py-2 hover:bg-red-700 float-right"
-              onClick={() => {
-                deleteForm(form.id);
-              }}
+      <ul>
+        {currentState
+          .filter((form) =>
+            form.title.toLowerCase().includes(search?.toLowerCase() || "")
+          )
+          .map((form, index) => (
+            <li
+              key={form.id}
+              className="shadow-lg rounded-lg p-6 border-1 pb-12"
+              tabIndex={index}
             >
-              Delete
-              <img
-                className="float-right pt-0.5"
-                src={deleteIcon}
-                alt="delete"
-                width={20}
-                height={20}
-              />
-            </button>
-            <Link
-              className="ml-2 bg-blue-500 text-white font-bold rounded-lg px-4 py-2 hover:bg-blue-700 float-right"
-              href={`/forms/${form.id}`}
-            >
-              Open
-              <img
-                className="float-right pt-0.5"
-                src={open}
-                alt="open"
-                width={20}
-                height={20}
-              />
-            </Link>
-            <Link
-              className="bg-green-500 text-white font-bold rounded-lg px-4 py-2 hover:bg-green-700 float-right"
-              href={`/preview/${form.id}`}
-            >
-              Preview
-              <img
-                className="float-right pt-0.5"
-                src={previewIcon}
-                alt="open"
-                width={20}
-                height={20}
-              />
-            </Link>
-          </div>
-        ))}
+              <div className="float-left pt-1 pr-4">
+                {form.title} <br /> <p className="text-gray-500 font-thin"></p>
+              </div>
+              <button
+                className="ml-2 bg-red-500 text-white font-bold rounded-lg px-4 py-2 hover:bg-red-700 float-right"
+                onClick={() => {
+                  deleteThisForm(form.id);
+                }}
+              >
+                Delete
+                <img
+                  className="float-right pt-0.5"
+                  src={deleteIcon}
+                  alt="delete"
+                  width={20}
+                  height={20}
+                />
+              </button>
+              <Link
+                className="ml-2 bg-blue-500 text-white font-bold rounded-lg px-4 py-2 hover:bg-blue-700 float-right"
+                href={`/forms/${form.id}`}
+              >
+                Open
+                <img
+                  className="float-right pt-0.5"
+                  src={open}
+                  alt="open"
+                  width={20}
+                  height={20}
+                />
+              </Link>
+              <Link
+                className="bg-green-500 text-white font-bold rounded-lg px-4 py-2 hover:bg-green-700 float-right"
+                href={`/preview/${form.id}`}
+              >
+                Preview
+                <img
+                  className="float-right pt-0.5"
+                  src={previewIcon}
+                  alt="open"
+                  width={20}
+                  height={20}
+                />
+              </Link>
+            </li>
+          ))}
+      </ul>
       {currentState.length === 0 ? (
         <div className="text-red-500 justify-center text-xl flex">
           No Forms created

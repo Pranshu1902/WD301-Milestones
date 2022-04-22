@@ -50,19 +50,21 @@ export default function NewForm(props: { id: number }) {
     fields: [],
   });
 
-  listForms({
-    offset: 0,
-    limit: 5,
-  }).then((data) => {
-    const forms: Form[] = data.results;
-    let initialState: Form = forms.filter((form) => form.id === props.id)[0];
-    setState(initialState);
-  });
+  useEffect(() => {
+    listForms({
+      offset: 0,
+      limit: 5,
+    }).then((data) => {
+      const forms: Form[] = data.results;
+      //let initialState: Form = forms.filter((form) => form.id === props.id)[0];
+      setState(forms.filter((form) => form.id === props.id)[0]);
+    });
+  }, []);
 
   getFormFields(props.id).then((data) => {
-    let newState = state;
-    newState.fields = data.results; //data.results ? (newState.fields = data.results) : (newState.fields = []);
-    setState(newState);
+    //let newState = state;
+    //newState.fields = data.results; //data.results ? (newState.fields = data.results) : (newState.fields = []);
+    setState({ ...state, fields: data.results });
   });
 
   const [newField, setNewField] = useState({ label: "", type: "" });

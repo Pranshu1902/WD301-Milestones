@@ -25,7 +25,7 @@ export default function CreateForm() {
       // Basic Auth Credentials
       try {
         const data = await createForm(form);
-        navigate(`/form/${data.id}`);
+        navigate(`/forms/${data.id}`);
       } catch (error) {
         console.log(error);
       }

@@ -1,6 +1,4 @@
-import { link } from "fs";
 import { ActiveLink, navigate } from "raviger";
-import React from "react";
 import logo from "./logo.svg";
 import { User } from "./types/userTypes";
 

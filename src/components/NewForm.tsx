@@ -19,16 +19,6 @@ import {
   updateFormTitle,
 } from "../utils/apiUtils";
 
-export interface formTemplate {
-  id: number;
-  type: string;
-  label: string;
-  value: string;
-  options: string[];
-}
-
-const formTemplate = { id: 1, type: "text", label: "", value: "", options: [] };
-
 export default function NewForm(props: { id: number }) {
   const defaultField = {
     id: 0,

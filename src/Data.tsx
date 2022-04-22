@@ -1,5 +1,4 @@
-import React from "react";
-import { formTemplate, form } from "./components/Home";
+import { form } from "./components/Home";
 import { formType } from "./types/formType";
 
 export const saveLocalForms = (localForms: formType[]) => {

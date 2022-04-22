@@ -29,14 +29,9 @@ export default function LabelledInput(props: {
           value={props.fieldType}
         >
           <option value="">Select an option</option>
-          <option value="text">Text</option>
-          <option value="date">Date</option>
-          <option value="email">Email</option>
-          <option value="number">Number</option>
-          <option value="dropdown">Dropdown</option>
-          <option value="radio">Radio Buttons</option>
-          <option value="textarea">Text Area</option>
-          <option value="multidropdown">Multi-select dropdown</option>
+          <option value="TEXT">Text</option>
+          <option value="DROPDOWN">Dropdown</option>
+          <option value="RADIO">Radio Buttons</option>
         </select>
 
         <button

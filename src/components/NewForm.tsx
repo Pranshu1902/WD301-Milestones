@@ -11,6 +11,7 @@ import dragIcon from "../images/drag.webp";
 import {
   addField,
   deleteFormField,
+  getFormData,
   getFormFields,
   listForms,
   patchFormData,
@@ -60,16 +61,16 @@ export default function NewForm(props: { id: number }) {
       limit: 5,
     }).then((data) => {
       const forms: Form[] = data.results;
-      let initialState: Form = forms.filter((form) => form.id === props.id)[0];
-      setState(initialState);
+      //let initialState: Form = forms.filter((form) => form.id === props.id)[0];
+      setState(forms.filter((form) => form.id === props.id)[0]);
     });
   }, []);
 
   useEffect(() => {
     getFormFields(props.id).then((data) => {
-      let newState = state;
-      newState.fields = data.results; //data.results ? (newState.fields = data.results) : (newState.fields = []);
-      setState(newState);
+      //let newState = state;
+      //newState.fields = data.results; //data.results ? (newState.fields = data.results) : (newState.fields = []);
+      setState({ ...state, fields: data.results });
     });
   }, []);
 
@@ -125,9 +126,10 @@ export default function NewForm(props: { id: number }) {
   };
 
   const updateTitle = (value: string) => {
+    setTitle(value);
     setState({ ...state, title: value });
     updateFormTitle(props.id, { ...state, title: value });
-    // patchFormData(props.id, { ...state, title: value });
+    patchFormData(props.id, { ...state, title: value });
   };
 
   const removeThisOption = (id: number, option: string) => {
@@ -255,6 +257,7 @@ export default function NewForm(props: { id: number }) {
 
     const updatedFormState = { ...state, fields: newFields };
     setState(updatedFormState);
+    patchFormData(props.id, updatedFormState);
   };
 
   const removeThisField = (id: number) => {

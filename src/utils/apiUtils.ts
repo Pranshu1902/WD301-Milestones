@@ -14,7 +14,12 @@ export type submissionsForm = {
 
 export type answers = { form_field: string; value: string };
 
-export type submissions = { form: submissionsForm; answers: answers[] };
+export type submissions = {
+  id: number;
+  form: submissionsForm;
+  answers: answers[];
+  created_date: string;
+};
 
 export const request = async (
   endpoint: string,

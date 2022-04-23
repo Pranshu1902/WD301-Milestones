@@ -1,12 +1,18 @@
 import React, { useEffect, useReducer, useState } from "react";
 import PreviewInput from "../PreviewInput";
 import closeIcon from "../images/close.png";
-import { getLocalForms } from "../Data";
 import { Link } from "raviger";
 import leftArrow from "../images/left.png";
 import rightArrow from "../images/right.png";
 import { Form } from "../types/formType";
-import { getFormFields, listForms } from "../utils/apiUtils";
+import {
+  answers,
+  getFormFields,
+  listForms,
+  saveSubmissions,
+  submissions,
+  submissionsForm,
+} from "../utils/apiUtils";
 
 export interface formTemplate {
   id: number;
@@ -21,8 +27,6 @@ export interface form {
   title: string;
   fields: formTemplate[];
 }
-
-// const formTemplate = { type: "text", label: "", value: "" };
 
 export default function Preview(props: { id: number }) {
   const [state, setState] = useState<Form>({
@@ -41,17 +45,14 @@ export default function Preview(props: { id: number }) {
       offset: 0,
       limit: 5,
     }).then((data) => {
-      const forms: Form[] = data.results;
-      let initialState: Form = forms.filter((form) => form.id === props.id)[0];
-      setState(initialState);
+      let mainForm: Form = data.results.filter(
+        (form: Form) => form.id === props.id
+      )[0];
+      getFormFields(props.id).then((data) => {
+        setState({ ...mainForm, fields: data.results });
+      });
     });
   }, [props.id]);
-
-  useEffect(() => {
-    getFormFields(props.id).then((data) => {
-      setState({ ...state, fields: data.results });
-    });
-  }, [props.id, state]);
 
   // useReducer for fieldId
   type nextFieldAction = { type: "next"; value: number };
@@ -59,38 +60,30 @@ export default function Preview(props: { id: number }) {
 
   type fieldIdAction = nextFieldAction | prevFieldAction;
 
-  const fieldIdReducer = (state: number, action: fieldIdAction) => {
+  const fieldIndexReducer = (states: number, action: fieldIdAction) => {
     switch (action.type) {
       case "next": {
-        let form = getLocalForms().filter((form) => form.id === props.id)[0];
-        let index = form.fields.findIndex((field) => field.id === action.value);
-        if (index < form.fields.length - 1) {
-          return form.fields[index + 1].id;
+        if (states < state.fields.length - 1) {
+          return states + 1;
         }
-        return state;
+        return states;
       }
       case "prev": {
-        let form = getLocalForms().filter((form) => form.id === props.id)[0];
-        let index = form.fields.findIndex((field) => field.id === action.value);
-
-        if (index > 0) {
-          return form.fields[index - 1].id;
+        if (states > 0) {
+          return states - 1;
         }
-        return state;
+        return states;
       }
     }
   };
 
-  const [fieldId, fieldIdDispatcher] = useReducer(
-    fieldIdReducer,
-    state.fields && state.fields.length !== 0 ? state.fields[0].id : 0
-  );
+  const [fieldIndex, fieldIndexDispatcher] = useReducer(fieldIndexReducer, 0);
 
   const updateField = (
     e: React.FormEvent<HTMLInputElement> | React.FormEvent<HTMLTextAreaElement>
   ) => {
-    let newFields = state.fields.map((field) => {
-      if (field.id === fieldId) {
+    let newFields = state.fields.map((field, index) => {
+      if (index === fieldIndex) {
         console.log(field);
         return {
           ...field,
@@ -107,6 +100,25 @@ export default function Preview(props: { id: number }) {
     };
 
     setState(newState);
+  };
+
+  const saveSubmissionAPI = () => {
+    let submission: answers[] = [];
+    state.fields.forEach((field) => {
+      submission.push({ form_field: field.label, value: field.value });
+    });
+    let form: submissionsForm = {
+      label: state.title,
+      description: state.description ? state.description : "",
+      is_public: state.is_public ? state.is_public : false,
+    };
+    const data: submissions = {
+      id: Number(new Date()),
+      form: form,
+      answers: submission,
+      created_date: new Date().toISOString(),
+    };
+    saveSubmissions(props.id, data);
   };
 
   return (
@@ -148,73 +160,72 @@ export default function Preview(props: { id: number }) {
             </div>
           ) : (
             <div>
-              {state.fields.map((field) =>
-                field.id === fieldId ? (
-                  <div key={field.id}>
-                    <div>
-                      <PreviewInput
-                        key={field.id}
-                        id={field.id}
-                        label={field.label}
-                        fieldType={field.kind}
-                        value={field.value}
-                        onChangeCB={(e) => {
-                          updateField(e);
-                        }}
-                        options={field.options ? field.options : []}
+              <div key={state.fields[fieldIndex].id}>
+                <div>
+                  <PreviewInput
+                    key={state.fields[fieldIndex].id}
+                    id={state.fields[fieldIndex].id}
+                    label={state.fields[fieldIndex].label}
+                    fieldType={state.fields[fieldIndex].kind}
+                    value={state.fields[fieldIndex].value}
+                    onChangeCB={(e) => {
+                      updateField(e);
+                    }}
+                    options={
+                      state.fields[fieldIndex].options
+                        ? state.fields[fieldIndex].options
+                        : []
+                    }
+                  />
+                  <div className="flex gap-6 justify-center">
+                    <button
+                      onClick={() =>
+                        fieldIndexDispatcher({
+                          type: "prev",
+                          value: fieldIndex,
+                        })
+                      }
+                    >
+                      <img
+                        className="hover:scale-125"
+                        width={30}
+                        height={20}
+                        src={leftArrow}
+                        alt="left"
                       />
-                      <div className="flex gap-6 justify-center">
-                        <button
-                          onClick={() =>
-                            fieldIdDispatcher({
-                              type: "prev",
-                              value: fieldId,
-                            })
-                          }
-                        >
-                          <img
-                            className="hover:scale-125"
-                            width={30}
-                            height={20}
-                            src={leftArrow}
-                            alt="left"
-                          />
-                        </button>
-                        <button
-                          onClick={() =>
-                            fieldIdDispatcher({
-                              type: "next",
-                              value: fieldId,
-                            })
-                          }
-                        >
-                          <img
-                            className="hover:scale-125"
-                            width={30}
-                            height={20}
-                            src={rightArrow}
-                            alt="right"
-                          />
-                        </button>
-                      </div>
-                    </div>
-                    <div className="flex justify-center p-4">
-                      {fieldId === state.fields[state.fields.length - 1].id ? (
-                        <Link
-                          href="/"
-                          className="rounded-lg bg-green-500 hover:bg-green-700 text-white px-16 py-2"
-                        >
-                          Submit
-                        </Link>
-                      ) : (
-                        <div></div>
-                      )}
-                    </div>
+                    </button>
+                    <button
+                      onClick={() =>
+                        fieldIndexDispatcher({
+                          type: "next",
+                          value: fieldIndex,
+                        })
+                      }
+                    >
+                      <img
+                        className="hover:scale-125"
+                        width={30}
+                        height={20}
+                        src={rightArrow}
+                        alt="right"
+                      />
+                    </button>
                   </div>
-                ) : (
-                  <div key={field.id}></div>
-                )
-              )}
+                </div>
+                <div className="flex justify-center p-4">
+                  {fieldIndex === state.fields.length - 1 ? (
+                    <Link
+                      href="/"
+                      className="rounded-lg bg-green-500 hover:bg-green-700 text-white px-16 py-2"
+                      onClick={saveSubmissionAPI}
+                    >
+                      Submit
+                    </Link>
+                  ) : (
+                    <div></div>
+                  )}
+                </div>
+              </div>
             </div>
           )
         ) : (

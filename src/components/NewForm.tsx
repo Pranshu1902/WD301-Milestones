@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import LabelledInput from "../LabelledInput";
 import closeIcon from "../images/close.png";
 import { Link, navigate } from "raviger";
@@ -9,15 +9,23 @@ import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import dragIcon from "../images/drag.webp";
 import {
   addField,
-  deleteFormField,
   getFormFields,
   listForms,
   patchFormData,
+  patchFormFieldsOrder,
+  removeField,
   removeOption,
-  updateField,
   updateFieldAPI,
   updateFormTitle,
 } from "../utils/apiUtils";
+
+export interface formTemplate {
+  id: number;
+  type: string;
+  label: string;
+  value: string;
+  options: string[];
+}
 
 export default function NewForm(props: { id: number }) {
   const defaultField = {
@@ -41,54 +49,36 @@ export default function NewForm(props: { id: number }) {
     fields: [],
   });
 
-  const [currentTitle, setTitle] = useState("");
-
   useEffect(() => {
     listForms({
       offset: 0,
       limit: 5,
     }).then((data) => {
-      const forms: Form[] = data.results;
-      setState(forms.filter((form) => form.id === props.id)[0]);
+      let mainForm: Form = data.results.filter(
+        (form: Form) => form.id === props.id
+      )[0];
+      getFormFields(props.id).then((data) => {
+        setState({ ...mainForm, fields: data.results });
+      });
     });
   }, [props.id]);
-
-  getFormFields(props.id).then((data) => {
-    setState({ ...state, fields: data.results });
-  });
 
   const [newField, setNewField] = useState({ label: "", type: "" });
 
   const [option, setOption] = useState("");
 
-  const updateFieldType = (
-    e: React.FormEvent<HTMLSelectElement>,
-    id: number
-  ) => {
-    let newFields = state.fields.map((field) => {
-      if (field.id === id) {
-        return {
-          ...field,
-          type: e.currentTarget.value,
-        };
-      } else {
-        return field;
-      }
-    });
-
-    let newState = {
-      ...state,
-      fields: newFields,
-    };
-
+  const updateTitle = (value: string) => {
+    const newState = { ...state, title: value };
     setState(newState);
+
+    updateFormTitle(props.id, newState);
   };
 
-  const updateTitle = (value: string) => {
-    setTitle(value);
-    setState({ ...state, title: value });
-    updateFormTitle(props.id, { ...state, title: value });
-    patchFormData(props.id, { ...state, title: value });
+  const updateDescription = (value: string) => {
+    const newState = { ...state, description: value };
+    setState(newState);
+
+    updateFormTitle(props.id, newState);
   };
 
   const removeThisOption = (id: number, option: string) => {
@@ -133,6 +123,32 @@ export default function NewForm(props: { id: number }) {
     }
   };
 
+  const updateThisField = (id: number, label: string) => {
+    let updatedFields = state.fields.map((field) => {
+      if (field.id === id) {
+        return {
+          ...field,
+          label: label,
+        };
+      } else {
+        return field;
+      }
+    });
+
+    let newState = {
+      ...state,
+      fields: updatedFields,
+    };
+
+    const updatedField: FieldsType = {
+      ...state.fields.filter((field) => field.id === id)[0],
+      label: label,
+    };
+
+    setState(newState);
+    updateFieldAPI(props.id, id, updatedField);
+  };
+
   const addThisOption = (id: number) => {
     if (option !== "") {
       state.fields.filter((field) => field.id === id)[0].options.push(option);
@@ -152,8 +168,6 @@ export default function NewForm(props: { id: number }) {
     const fieldName = result.draggableId;
     const newIndex = result.destination.index;
 
-    console.log(result);
-
     const fieldIndex = state.fields.findIndex(
       (form) => form.label === fieldName
     );
@@ -166,27 +180,37 @@ export default function NewForm(props: { id: number }) {
 
     const updatedFormState = { ...state, fields: newFields };
     setState(updatedFormState);
-    patchFormData(props.id, updatedFormState);
+    // patchFormData(props.id, updatedFormState);
+
+    newFields.map((field) => {
+      return patchFormFieldsOrder(props.id, field.id, field);
+    });
   };
 
-  const removeThisField = (id: number) => {
-    let newState = state;
-    newState.fields = newState.fields.filter((field) => field.id !== id);
-
-    setState({
-      ...state,
-      fields: state.fields.filter((field) => field.id !== id),
+  const updateThisFieldType = (id: number, type: string) => {
+    let updatedFields = state.fields.map((field) => {
+      if (field.id === id) {
+        return {
+          ...field,
+          kind: type,
+        };
+      } else {
+        return field;
+      }
     });
 
-    deleteFormField(props.id, id, {
+    let newState = {
       ...state,
-      fields: state.fields.filter((field) => field.id !== id),
-    });
+      fields: updatedFields,
+    };
 
-    patchFormData(props.id, {
-      ...state,
-      fields: state.fields.filter((field) => field.id !== id),
-    });
+    const updatedField: FieldsType = {
+      ...state.fields.filter((field) => field.id === id)[0],
+      kind: type,
+    };
+
+    setState(newState);
+    updateFieldAPI(props.id, id, updatedField);
   };
 
   const addNewFieldAPI = () => {
@@ -194,6 +218,18 @@ export default function NewForm(props: { id: number }) {
     setNewField({ label: "", type: "" });
 
     patchFormData(props.id, state);
+  };
+
+  const removeFieldAPI = (id: number) => {
+    let updatedFields = state.fields.filter((field) => field.id !== id);
+
+    let newState = {
+      ...state,
+      fields: updatedFields,
+    };
+
+    setState(newState);
+    removeField(props.id, id);
   };
 
   return (
@@ -218,9 +254,21 @@ export default function NewForm(props: { id: number }) {
           <div className="flex gap-4">
             <input
               className="border-2 border-gray-200 rounded-lg p-2 my-2 w-full flex-1"
-              value={currentTitle}
+              value={state.title}
               type={"text"}
+              placeholder={"Form Title"}
               onChange={(e) => updateTitle(e.target.value)}
+            />
+          </div>
+          <div className="float-left">
+            <input
+              type="text"
+              placeholder="Description"
+              value={state.description}
+              className="border-2 rounded-lg p-2 w-full"
+              onChange={(e) => {
+                updateDescription(e.target.value);
+              }}
             />
           </div>
         </div>
@@ -274,23 +322,19 @@ export default function NewForm(props: { id: number }) {
                             />
                             <LabelledInput
                               onTypeChangeCB={(e) => {
-                                updateFieldType(e, field.id);
+                                updateThisFieldType(field.id, e);
                               }}
                               id={field.id}
                               label={field.label}
                               key={field.id}
                               fieldType={field.kind}
                               removeFieldCB={(e) => {
-                                removeThisField(field.id);
+                                removeFieldAPI(field.id);
                               }}
                               value={field.value}
                               optionValue={option}
                               onChangeCB={(e) => {
-                                updateField(
-                                  props.id,
-                                  field.id,
-                                  e.currentTarget.value
-                                );
+                                updateThisField(field.id, e);
                               }}
                               options={field.options}
                             />
@@ -330,21 +374,19 @@ export default function NewForm(props: { id: number }) {
                                 options={field.options}
                                 option={option}
                                 updateField={(e) =>
-                                  updateField(
-                                    props.id,
-                                    field.id,
-                                    e.currentTarget.value
-                                  )
+                                  updateThisField(field.id, e)
                                 }
                                 updateOptions={(e) => {
                                   setOption(e);
                                 }}
-                                updateFieldType={updateFieldType}
+                                updateFieldType={(e) =>
+                                  updateThisFieldType(field.id, e)
+                                }
                                 addNewOption={() => {
                                   addThisOption(field.id);
                                 }}
                                 removeField={() => {
-                                  removeThisField(field.id);
+                                  removeFieldAPI(field.id);
                                 }}
                                 removeOption={removeThisOption}
                               />
@@ -414,7 +456,6 @@ export default function NewForm(props: { id: number }) {
           type="submit"
           className="mt-4 shadow-xl px-12 py-2 text-white bg-green-500 hover:bg-green-800 rounded-lg font-bold"
           onClick={() => {
-            patchFormData(props.id, state);
             navigate("/");
           }}
         >

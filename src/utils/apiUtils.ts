@@ -5,6 +5,21 @@ const API_BASE_URL = "https://tsapi.coronasafe.live/api/";
 
 type RequestMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
 
+export type submissionsForm = {
+  label: string;
+  description: string;
+  is_public: boolean;
+};
+
+export type answers = { form_field: string; value: string };
+
+export type submissions = {
+  id: number;
+  form: submissionsForm;
+  answers: answers[];
+  created_date: string;
+};
+
 export const request = async (
   endpoint: string,
   method: RequestMethod = "GET",
@@ -24,6 +39,9 @@ export const request = async (
     url = `${API_BASE_URL}${endpoint}`;
     payload = data ? JSON.stringify(data) : "";
   }
+
+  // Basic Authentication
+  // const auth = "Basic " + window.btoa("pranshu1902:ULX28qn2WvhsG3v");
 
   // Token Authentication
   const token = localStorage.getItem("token");
@@ -71,8 +89,20 @@ export async function patchFormData(formId: number, form: Form) {
   return request(`forms/${formId}/`, "PUT", form);
 }
 
+export async function patchFormFieldsOrder(
+  formId: number,
+  fieldId: number,
+  form: FieldsType
+) {
+  return request(`forms/${formId}/fields/${fieldId}`, "PUT", form);
+}
+
 export async function putAllFormData(updatedForms: Form[]) {
   return request(`forms/`, "POST", { updatedForms });
+}
+
+export async function saveSubmissions(formId: number, answers: submissions) {
+  return request(`forms/${formId}`, "POST", { answers });
 }
 
 export async function deleteForm(formId: number) {
@@ -125,7 +155,7 @@ export async function updateFormTitle(formId: number, option: any) {
   return request(`forms/${formId}/`, "PUT", option);
 }
 
-export async function removeField(formId: string, fieldId: string) {
+export async function removeField(formId: number, fieldId: number) {
   return request(`forms/${formId}/fields/${fieldId}/`, "DELETE");
 }
 

@@ -1,5 +1,3 @@
-import React from "react";
-
 export default function OptionsInput(props: {
   id: number;
   label: string;
@@ -9,9 +7,9 @@ export default function OptionsInput(props: {
   options: string[];
   option: string;
   // onChangeCB: (e: ) => void;
-  updateField: (e: React.FormEvent<HTMLInputElement>, id: number) => void;
+  updateField: (e: string, id: number) => void;
   updateOptions: (e: string) => void;
-  updateFieldType: (e: React.FormEvent<HTMLSelectElement>, id: number) => void;
+  updateFieldType: (e: string, id: number) => void;
   addNewOption: () => void;
   removeField: (id: number) => void;
   removeOption: (id: number, option: string) => void;
@@ -23,7 +21,7 @@ export default function OptionsInput(props: {
           className="border-2 border-gray-200 rounded-lg p-2 my-2 w-full"
           type={"text"}
           onChange={(e) => {
-            props.updateField(e, props.id);
+            props.updateField(e.target.value, props.id);
           }}
           value={props.label}
         />
@@ -32,7 +30,7 @@ export default function OptionsInput(props: {
           id="field"
           className="p-2 my-2 border-2 rounded-lg flex"
           onChange={(e) => {
-            props.updateFieldType(e, props.id);
+            props.updateFieldType(e.target.value, props.id);
           }}
           value={props.fieldType}
         >

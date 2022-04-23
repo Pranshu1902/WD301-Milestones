@@ -6,6 +6,16 @@ const API_BASE_URL = "https://tsapi.coronasafe.live/api/";
 
 type RequestMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
 
+export type submissionsForm = {
+  label: string;
+  description: string;
+  is_public: boolean;
+};
+
+export type answers = { form_field: string; value: string };
+
+export type submissions = { form: submissionsForm; answers: answers[] };
+
 export const request = async (
   endpoint: string,
   method: RequestMethod = "GET",
@@ -85,6 +95,10 @@ export async function patchFormFieldsOrder(
 
 export async function putAllFormData(updatedForms: Form[]) {
   return request(`forms/`, "POST", { updatedForms });
+}
+
+export async function saveSubmissions(formId: number, answers: submissions) {
+  return request(`forms/${formId}`, "POST", { answers });
 }
 
 export async function deleteForm(formId: number) {

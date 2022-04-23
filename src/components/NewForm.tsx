@@ -171,8 +171,6 @@ export default function NewForm(props: { id: number }) {
     const fieldName = result.draggableId;
     const newIndex = result.destination.index;
 
-    console.log(result);
-
     const fieldIndex = state.fields.findIndex(
       (form) => form.label === fieldName
     );
@@ -261,6 +259,7 @@ export default function NewForm(props: { id: number }) {
               className="border-2 border-gray-200 rounded-lg p-2 my-2 w-full flex-1"
               value={state.title}
               type={"text"}
+              placeholder={"Form Title"}
               onChange={(e) => updateTitle(e.target.value)}
             />
           </div>

@@ -6,7 +6,14 @@ import { Link, navigate } from "raviger";
 import leftArrow from "../images/left.png";
 import rightArrow from "../images/right.png";
 import { Form, formType } from "../types/formType";
-import { getFormFields, listForms } from "../utils/apiUtils";
+import {
+  answers,
+  getFormFields,
+  listForms,
+  saveSubmissions,
+  submissions,
+  submissionsForm,
+} from "../utils/apiUtils";
 
 export interface formTemplate {
   id: number;
@@ -22,8 +29,6 @@ export interface form {
   fields: formTemplate[];
 }
 
-// const formTemplate = { type: "text", label: "", value: "" };
-
 export default function Preview(props: { id: number }) {
   const [state, setState] = useState<Form>({
     id: 0,
@@ -35,23 +40,6 @@ export default function Preview(props: { id: number }) {
     modified_date: "",
     fields: [],
   });
-
-  /*useEffect(() => {
-    listForms({
-      offset: 0,
-      limit: 5,
-    }).then((data) => {
-      const forms: Form[] = data.results;
-      let initialState: Form = forms.filter((form) => form.id === props.id)[0];
-      setState(initialState);
-    });
-  }, []);
-
-  useEffect(() => {
-    getFormFields(props.id).then((data) => {
-      setState({ ...state, fields: data.results });
-    });
-  }, []);*/
 
   useEffect(() => {
     listForms({
@@ -113,6 +101,20 @@ export default function Preview(props: { id: number }) {
     };
 
     setState(newState);
+  };
+
+  const saveSubmissionAPI = () => {
+    let submission: answers[] = [];
+    state.fields.forEach((field) => {
+      submission.push({ form_field: field.label, value: field.value });
+    });
+    let form: submissionsForm = {
+      label: state.title,
+      description: state.description ? state.description : "",
+      is_public: state.is_public ? state.is_public : false,
+    };
+    const data: submissions = { form: form, answers: submission };
+    saveSubmissions(props.id, data);
   };
 
   return (
@@ -211,6 +213,7 @@ export default function Preview(props: { id: number }) {
                     <Link
                       href="/"
                       className="rounded-lg bg-green-500 hover:bg-green-700 text-white px-16 py-2"
+                      onClick={saveSubmissionAPI}
                     >
                       Submit
                     </Link>

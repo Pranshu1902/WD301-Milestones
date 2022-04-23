@@ -15,6 +15,7 @@ export default function FormTitle(props: {
           type={props.fieldType}
           onChange={props.onChangeCB}
           value={props.value}
+          placeholder={"Form Title"}
         />
       </div>
     </>

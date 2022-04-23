@@ -117,7 +117,7 @@ export async function updateFormTitle(formId: number, option: any) {
   return request(`forms/${formId}/`, "PUT", option);
 }
 
-export async function removeField(formId: string, fieldId: string) {
+export async function removeField(formId: number, fieldId: number) {
   return request(`forms/${formId}/fields/${fieldId}/`, "DELETE");
 }
 

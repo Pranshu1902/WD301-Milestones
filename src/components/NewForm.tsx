@@ -1,18 +1,17 @@
-import React, { useEffect, useReducer, useState } from "react";
+import React, { useEffect, useState } from "react";
 import LabelledInput from "../LabelledInput";
 import closeIcon from "../images/close.png";
 import FormTitle from "../FormTitle";
-import { getLocalForms, saveLocalForms } from "../Data";
-import { Link, navigate } from "raviger";
+import { Link } from "raviger";
 import previewIcon from "../images/eye.png";
-import { FieldsType, Form, formType } from "../types/formType";
+import { FieldsType, Form } from "../types/formType";
 import OptionsInput from "../OptionsInput";
 import {
   addField,
-  getFormData,
   getFormFields,
   listForms,
   patchFormData,
+  removeField,
   removeOption,
   updateFieldAPI,
   updateFormTitle,
@@ -55,71 +54,28 @@ export default function NewForm(props: { id: number }) {
       offset: 0,
       limit: 5,
     }).then((data) => {
-      const forms: Form[] = data.results;
-      //let initialState: Form = forms.filter((form) => form.id === props.id)[0];
-      setState(forms.filter((form) => form.id === props.id)[0]);
+      let mainForm: Form = data.results.filter(
+        (form: Form) => form.id === props.id
+      )[0];
+      getFormFields(props.id).then((data) => {
+        setState({ ...mainForm, fields: data.results });
+      });
     });
   }, []);
-
-  getFormFields(props.id).then((data) => {
-    //let newState = state;
-    //newState.fields = data.results; //data.results ? (newState.fields = data.results) : (newState.fields = []);
-    setState({ ...state, fields: data.results });
-  });
 
   const [newField, setNewField] = useState({ label: "", type: "" });
 
   const [option, setOption] = useState("");
 
-  const updateField = (
-    e: React.FormEvent<HTMLInputElement> | React.FormEvent<HTMLTextAreaElement>,
-    id: number
-  ) => {
-    let newFields = state.fields.map((field) => {
-      if (field.id === id) {
-        console.log(field);
-        return {
-          ...field,
-          label: e.currentTarget.value,
-        };
-      } else {
-        return field;
-      }
-    });
-
-    let newState = {
-      ...state,
-      fields: newFields,
-    };
-
-    setState(newState);
-  };
-
-  const updateFieldType = (
-    e: React.FormEvent<HTMLSelectElement>,
-    id: number
-  ) => {
-    let newFields = state.fields.map((field) => {
-      if (field.id === id) {
-        return {
-          ...field,
-          type: e.currentTarget.value,
-        };
-      } else {
-        return field;
-      }
-    });
-
-    let newState = {
-      ...state,
-      fields: newFields,
-    };
-
-    setState(newState);
-  };
-
   const updateTitle = (value: string) => {
     const newState = { ...state, title: value };
+    setState(newState);
+
+    updateFormTitle(props.id, newState);
+  };
+
+  const updateDescription = (value: string) => {
+    const newState = { ...state, description: value };
     setState(newState);
 
     updateFormTitle(props.id, newState);
@@ -167,13 +123,13 @@ export default function NewForm(props: { id: number }) {
     }
   };
 
-  const updateThisField = (id: number) => {
+  const updateThisField = (id: number, label: string) => {
     let updatedFields = state.fields.map((field) => {
       if (field.id === id) {
         return {
           ...field,
-          label: newField.label,
-          kind: newField.type,
+          label: label,
+          // kind: newField.type,
         };
       } else {
         return field;
@@ -187,18 +143,55 @@ export default function NewForm(props: { id: number }) {
 
     const updatedField: FieldsType = {
       ...state.fields.filter((field) => field.id === id)[0],
-      label: newField.label,
-      kind: newField.type,
+      label: label,
+      // kind: newField.type,
     };
 
     setState(newState);
     updateFieldAPI(props.id, id, updatedField);
   };
 
-  useEffect(() => {
+  const removeFieldAPI = (id: number) => {
+    let updatedFields = state.fields.filter((field) => field.id !== id);
+
+    let newState = {
+      ...state,
+      fields: updatedFields,
+    };
+
+    setState(newState);
+    removeField(props.id, id);
+  };
+
+  const updateThisFieldType = (id: number, type: string) => {
+    let updatedFields = state.fields.map((field) => {
+      if (field.id === id) {
+        return {
+          ...field,
+          kind: type,
+        };
+      } else {
+        return field;
+      }
+    });
+
+    let newState = {
+      ...state,
+      fields: updatedFields,
+    };
+
+    const updatedField: FieldsType = {
+      ...state.fields.filter((field) => field.id === id)[0],
+      kind: type,
+    };
+
+    setState(newState);
+    updateFieldAPI(props.id, id, updatedField);
+  };
+
+  /*useEffect(() => {
     patchFormData(props.id, state);
-    console.log(state);
-  }, []);
+  }, []);*/
 
   const addThisOption = (id: number) => {
     if (option !== "") {
@@ -232,16 +225,30 @@ export default function NewForm(props: { id: number }) {
           </Link>
         </div>
         <div>
-          <FormTitle
-            id={state?.id}
-            label="Form Title"
-            fieldType="text"
-            value={state?.title}
-            onChangeCB={(e) => {
-              updateTitle(e.currentTarget.value);
-            }}
-          />
+          <div>
+            <FormTitle
+              id={state?.id}
+              label="Form Title"
+              fieldType="text"
+              value={state?.title}
+              onChangeCB={(e) => {
+                updateTitle(e.currentTarget.value);
+              }}
+            />
+          </div>
+          <div className="float-left">
+            <input
+              type="text"
+              placeholder="Description"
+              value={state.description}
+              className="border-2 rounded-lg p-2 w-full"
+              onChange={(e) => {
+                updateDescription(e.target.value);
+              }}
+            />
+          </div>
         </div>
+
         <div>
           <Link
             className="float-right px-3 py-1 mt-4 font-bold text-white rounded-xl"
@@ -264,23 +271,18 @@ export default function NewForm(props: { id: number }) {
               field.kind === "TEXT" ? (
                 <LabelledInput
                   onTypeChangeCB={(e) => {
-                    updateFieldType(e, field.id);
+                    updateThisFieldType(field.id, e);
                   }}
                   id={field.id}
                   label={field.label}
                   key={field.id}
                   fieldType={field.kind}
-                  removeFieldCB={() =>
-                    setNewField({
-                      type: "remove_field",
-                      label: "",
-                    })
-                  }
+                  removeFieldCB={() => {
+                    removeFieldAPI(field.id);
+                  }}
                   value={field.value}
                   optionValue={option}
-                  onChangeCB={(e) => {
-                    updateThisField(field.id);
-                  }}
+                  onChangeCB={(e) => updateThisField(field.id, e)}
                   options={field.options}
                 />
               ) : (
@@ -294,17 +296,17 @@ export default function NewForm(props: { id: number }) {
                   options={field.options}
                   option={option}
                   updateField={(e) => {
-                    updateThisField(field.id);
+                    updateThisField(field.id, e);
                   }}
                   updateOptions={(e) => {
                     setOption(e);
                   }}
-                  updateFieldType={updateFieldType}
+                  updateFieldType={(e) => updateThisFieldType(field.id, e)}
                   addNewOption={() => {
                     addThisOption(field.id);
                   }}
                   removeField={() => {
-                    console.log("remove field");
+                    removeFieldAPI(field.id);
                   }}
                   removeOption={removeThisOption}
                 />

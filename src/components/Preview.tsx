@@ -36,7 +36,7 @@ export default function Preview(props: { id: number }) {
     fields: [],
   });
 
-  useEffect(() => {
+  /*useEffect(() => {
     listForms({
       offset: 0,
       limit: 5,
@@ -50,6 +50,20 @@ export default function Preview(props: { id: number }) {
   useEffect(() => {
     getFormFields(props.id).then((data) => {
       setState({ ...state, fields: data.results });
+    });
+  }, []);*/
+
+  useEffect(() => {
+    listForms({
+      offset: 0,
+      limit: 5,
+    }).then((data) => {
+      let mainForm: Form = data.results.filter(
+        (form: Form) => form.id === props.id
+      )[0];
+      getFormFields(props.id).then((data) => {
+        setState({ ...mainForm, fields: data.results });
+      });
     });
   }, []);
 
@@ -107,9 +121,6 @@ export default function Preview(props: { id: number }) {
     };
 
     setState(newState);
-    // stateDispatcher({ type: "update", newState });
-    let updatedPreviewData = getLocalForms();
-    // savePreviewData([...updatedPreviewData, newState]);
   };
 
   return (

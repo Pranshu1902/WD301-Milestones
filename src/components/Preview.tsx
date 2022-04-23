@@ -113,7 +113,12 @@ export default function Preview(props: { id: number }) {
       description: state.description ? state.description : "",
       is_public: state.is_public ? state.is_public : false,
     };
-    const data: submissions = { form: form, answers: submission };
+    const data: submissions = {
+      id: Number(new Date()),
+      form: form,
+      answers: submission,
+      created_date: new Date().toISOString(),
+    };
     saveSubmissions(props.id, data);
   };
 

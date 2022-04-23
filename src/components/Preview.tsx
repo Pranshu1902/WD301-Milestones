@@ -6,7 +6,14 @@ import { Link, navigate } from "raviger";
 import leftArrow from "../images/left.png";
 import rightArrow from "../images/right.png";
 import { Form, formType } from "../types/formType";
-import { getFormFields, listForms } from "../utils/apiUtils";
+import {
+  answers,
+  getFormFields,
+  listForms,
+  saveSubmissions,
+  submissions,
+  submissionsForm,
+} from "../utils/apiUtils";
 
 export interface formTemplate {
   id: number;
@@ -115,6 +122,20 @@ export default function Preview(props: { id: number }) {
     setState(newState);
   };
 
+  const saveSubmissionAPI = () => {
+    let submission: answers[] = [];
+    state.fields.forEach((field) => {
+      submission.push({ form_field: field.label, value: field.value });
+    });
+    let form: submissionsForm = {
+      label: state.title,
+      description: state.description ? state.description : "",
+      is_public: state.is_public ? state.is_public : false,
+    };
+    const data: submissions = { form: form, answers: submission };
+    saveSubmissions(props.id, data);
+  };
+
   return (
     <div>
       <div>
@@ -211,6 +232,7 @@ export default function Preview(props: { id: number }) {
                     <Link
                       href="/"
                       className="rounded-lg bg-green-500 hover:bg-green-700 text-white px-16 py-2"
+                      onClick={saveSubmissionAPI}
                     >
                       Submit
                     </Link>

@@ -75,6 +75,14 @@ export async function patchFormData(formId: number, form: Form) {
   return request(`forms/${formId}/`, "PUT", form);
 }
 
+export async function patchFormFieldsOrder(
+  formId: number,
+  fieldId: number,
+  form: FieldsType
+) {
+  return request(`forms/${formId}/fields/${fieldId}`, "PUT", form);
+}
+
 export async function putAllFormData(updatedForms: Form[]) {
   return request(`forms/`, "POST", { updatedForms });
 }
@@ -129,7 +137,7 @@ export async function updateFormTitle(formId: number, option: any) {
   return request(`forms/${formId}/`, "PUT", option);
 }
 
-export async function removeField(formId: string, fieldId: string) {
+export async function removeField(formId: number, fieldId: number) {
   return request(`forms/${formId}/fields/${fieldId}/`, "DELETE");
 }
 

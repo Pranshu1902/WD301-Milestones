@@ -75,62 +75,67 @@ export default function Home() {
         />
       </form>
       <ul>
-        {currentState
-          .filter((form) =>
-            form.title.toLowerCase().includes(search?.toLowerCase() || "")
-          )
-          .map((form, index) => (
-            <li
-              key={form.id}
-              className="shadow-lg rounded-lg p-6 border-1 pb-12"
-              tabIndex={index}
-            >
-              <div className="float-left pt-1 pr-4">
-                {form.title} <br /> <p className="text-gray-500 font-thin"></p>
-              </div>
-              <button
-                className="ml-2 bg-red-500 text-white font-bold rounded-lg px-4 py-2 hover:bg-red-700 float-right"
-                onClick={() => {
-                  deleteThisForm(form.id);
-                }}
+        {currentState && currentState.length ? (
+          currentState
+            .filter((form) =>
+              form.title.toLowerCase().includes(search?.toLowerCase() || "")
+            )
+            .map((form, index) => (
+              <li
+                key={form.id}
+                className="shadow-lg rounded-lg p-6 border-1 pb-12"
+                tabIndex={index}
               >
-                Delete
-                <img
-                  className="float-right pt-0.5"
-                  src={deleteIcon}
-                  alt="delete"
-                  width={20}
-                  height={20}
-                />
-              </button>
-              <Link
-                className="ml-2 bg-blue-500 text-white font-bold rounded-lg px-4 py-2 hover:bg-blue-700 float-right"
-                href={`/forms/${form.id}`}
-              >
-                Open
-                <img
-                  className="float-right pt-0.5"
-                  src={open}
-                  alt="open"
-                  width={20}
-                  height={20}
-                />
-              </Link>
-              <Link
-                className="bg-green-500 text-white font-bold rounded-lg px-4 py-2 hover:bg-green-700 float-right"
-                href={`/preview/${form.id}`}
-              >
-                Preview
-                <img
-                  className="float-right pt-0.5"
-                  src={previewIcon}
-                  alt="preview"
-                  width={20}
-                  height={20}
-                />
-              </Link>
-            </li>
-          ))}
+                <div className="float-left pt-1 pr-4">
+                  {form.title} <br />{" "}
+                  <p className="text-gray-500 font-thin"></p>
+                </div>
+                <button
+                  className="ml-2 bg-red-500 text-white font-bold rounded-lg px-4 py-2 hover:bg-red-700 float-right"
+                  onClick={() => {
+                    deleteThisForm(form.id);
+                  }}
+                >
+                  Delete
+                  <img
+                    className="float-right pt-0.5"
+                    src={deleteIcon}
+                    alt="delete"
+                    width={20}
+                    height={20}
+                  />
+                </button>
+                <Link
+                  className="ml-2 bg-blue-500 text-white font-bold rounded-lg px-4 py-2 hover:bg-blue-700 float-right"
+                  href={`/forms/${form.id}`}
+                >
+                  Open
+                  <img
+                    className="float-right pt-0.5"
+                    src={open}
+                    alt="open"
+                    width={20}
+                    height={20}
+                  />
+                </Link>
+                <Link
+                  className="bg-green-500 text-white font-bold rounded-lg px-4 py-2 hover:bg-green-700 float-right"
+                  href={`/preview/${form.id}`}
+                >
+                  Preview
+                  <img
+                    className="float-right pt-0.5"
+                    src={previewIcon}
+                    alt="preview"
+                    width={20}
+                    height={20}
+                  />
+                </Link>
+              </li>
+            ))
+        ) : (
+          <div></div>
+        )}
       </ul>
       {currentState.length === 0 ? (
         <div className="text-red-500 justify-center text-xl flex">
